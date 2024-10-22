@@ -1,0 +1,4 @@
+node_modules
+.DS_Store
+boofstream/out/*.json
+boofstream/config.json
