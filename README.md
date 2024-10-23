@@ -51,4 +51,5 @@ direct support for some
 [TournamentStreamHelper](https://github.com/joaorb64/TournamentStreamHelper),
 which i used extensively prior to developing boofstream, and whose layouts i
 still use
+- danke to everyone who watches the streams i produce :)
 - oregon melee 🗣️
