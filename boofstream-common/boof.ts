@@ -8,7 +8,19 @@ type BoofState = {
     player1Wins: boolean[],
     lastPlayer1Score: number,
     lastPlayer2Score: number,
+    slippi?: Slippi,
+    slippiConnected: boolean,
 }
+
+type Slippi = {
+    port1: number,
+    port2: number,
+    character1: Character,
+    character2: Character,
+    characterColor1: CharacterColor,
+    characterColor2: CharacterColor,
+    player1IsPort1?: boolean,
+};
 
 type Tournament = {
     name: string,
@@ -145,5 +157,5 @@ const CHARACTER_COLORS = {
     [Character.GANONDORF]: [CharacterColor.RED, CharacterColor.BLUE, CharacterColor.GREEN, CharacterColor.PURPLE],
 }
 
-export type { BoofState, Player, Tournament, Commentator, StartggPlayer, BoofSet };
+export type { BoofState, Player, Tournament, Commentator, StartggPlayer, BoofSet, Slippi };
 export { Character, CharacterColor, CHARACTER_COLORS };

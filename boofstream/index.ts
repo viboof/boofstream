@@ -5,13 +5,18 @@ import { BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Pl
 import cors from "cors";
 import express from "express";
 import { Server } from "socket.io";
+import { SlpRealTime, SlpLiveStream } from "@vinceau/slp-realtime";
 
 import fs from "fs";
 import { createServer } from "http";
+import { PlayerType } from "@slippi/slippi-js";
+import { parse } from "path";
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+let livestream: SlpLiveStream | null = null;
+const realtime = new SlpRealTime();
 
 const DEFAULT_PLAYER: Player = {
     score: 0,
@@ -39,6 +44,7 @@ let state: BoofState = {
     player1Wins: [],
     lastPlayer1Score: 0,
     lastPlayer2Score: 0,
+    slippiConnected: false,
 };
 
 if (fs.existsSync("out/state.json")) {
@@ -138,15 +144,14 @@ app.get("/countries/:country/states", (req, res) => {
 });
 
 app.get("/state", (_, res) => {
+    if (!livestream) {
+        state.slippiConnected = false;
+    }
+
     res.json(state);
 });
 
-app.post("/state", (req, res) => {
-    state = req.body;
-    
-    console.log("STATE:");
-    console.log(state);
-
+function writeState() {
     fs.writeFileSync("out/state.json", JSON.stringify(state));
 
     fs.writeFileSync("out/program_state.json", JSON.stringify({
@@ -166,7 +171,16 @@ app.post("/state", (req, res) => {
             }
         },
         commentary: state.commentators.map(convertCommentator),
-    }))
+    }));
+}
+
+app.post("/state", (req, res) => {
+    state = req.body;
+    
+    console.log("STATE:");
+    console.log(state);
+
+    writeState();
 
     setTimeout(() => io.emit("update_state", req.query.clientId), 100);
 
@@ -177,6 +191,88 @@ app.post("/state", (req, res) => {
 app.get("/startgg/init", startgg.init);
 app.get("/startgg/sets", startgg.sets);
 app.post("/startgg/sets/report", startgg.report);
+
+function parseCharacter(player: PlayerType) {
+    const character: Character = player.characterId!!;
+
+    // TODO: no way to tell when zelda changes to sheik in slp-realtime, so
+    // assume they're probably playing sheik
+    if (character === Character.ZELDA) {
+        return Character.SHEIK;
+    }
+
+    return character;
+}
+
+function parseCharacterColor(player: PlayerType) {
+    if (!player.characterColor) {
+        return CharacterColor.DEFAULT;
+    }
+    return CHARACTER_COLORS[parseCharacter(player)][player.characterColor - 1];
+}
+
+app.post("/slippi/livestream", async (req, res) => {
+    if (livestream) {
+        livestream.end();
+        livestream = null;
+    }
+
+    livestream = new SlpLiveStream("console");
+    await livestream.start("127.0.0.1", req.body.port);
+    
+    realtime.setStream(livestream);
+
+    realtime.game.start$.subscribe(e => {
+        console.log("PLAYER 0:", e.players[0]);
+        console.log("PLAYER 1",e.players[1]);
+        
+        state = { ...state, slippi: {
+            port1: e.players[0].port,
+            port2: e.players[1].port,
+            character1: parseCharacter(e.players[0]),
+            character2: parseCharacter(e.players[1]),
+            characterColor1: parseCharacterColor(e.players[0]),
+            characterColor2: parseCharacterColor(e.players[1]),
+            player1IsPort1: state.slippi ? state.slippi.player1IsPort1 : undefined,
+        }, slippiConnected: true };
+
+        const slippi = state.slippi!!;
+
+        if (slippi.player1IsPort1 !== undefined) {
+            state.player1.character = slippi.player1IsPort1
+                ? slippi.character1
+                : slippi.character2;
+            state.player1.characterColor = slippi.player1IsPort1
+                ? slippi.characterColor1
+                : slippi.characterColor2;
+
+            state.player2.character = slippi.player1IsPort1
+                ? slippi.character2
+                : slippi.character1;
+            state.player2.characterColor = slippi.player1IsPort1
+                ? slippi.characterColor2
+                : slippi.characterColor1;
+        }
+
+        writeState();
+        io.emit("update_state", "slippi");
+
+        console.log(state);
+    });
+
+    res.send("ok");
+    res.status(200);
+    res.end();
+});
+
+app.post("/slippi/disconnect", async (_, res) => {
+    livestream?.end();
+    livestream = null;
+
+    res.send("ok");
+    res.status(200);
+    res.end();
+})
 
 app.listen(1337, () => console.log("live!"));
 server.listen(1338);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { Character, CHARACTER_COLORS, CharacterColor, Player, StartggPlayer } from "../types/boof";
 import StartggPlayerName from "./StartggPlayerName";
-import { getBackendHost } from "../utils";
+import { getBackendHost, getCharacterAssetName } from "../utils";
 
 const NOTHING_OPTION = { value: "", label: <></> };
 
@@ -13,15 +13,10 @@ function asset(name: string, path: string): JSX.Element {
 function characterAsset(characterName: string, colorName: string): string {
     // @ts-ignore
     const character: Character = Character[characterName];
+    // @ts-ignore
+    const color: CharacterColor = CharacterColor[colorName];
     
-    const color = colorName == "DEFAULT" 
-        ? 0 
-        // @ts-ignore
-        : CHARACTER_COLORS[character].indexOf(CharacterColor[colorName]) + 1;
-
-    const number = color < 10 ? "0" + color : "" + color;
-
-    return `characters/chara_2_${characterName.toLowerCase()}_${number}.png`;
+    return getCharacterAssetName(character, color);
 }
 
 const mapCountry = (c: string) =>

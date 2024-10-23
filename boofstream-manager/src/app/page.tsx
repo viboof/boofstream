@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import PlayerInfo from "./components/PlayerInfo";
-import { BoofSet, BoofState, Commentator, Player, StartggPlayer } from "./types/boof";
+import { BoofSet, BoofState, Commentator, Player, Slippi, StartggPlayer } from "./types/boof";
 import CommentatorInfo from "./components/CommentatorInfo";
 import { getBackendHost, getSocketHost } from "./utils";
+import { CharacterMatcher } from "./components/CharacterMatcher";
 
 const socket = io(getSocketHost());
 
@@ -46,18 +47,23 @@ export default function Page() {
     const [player1Wins, setPlayer1Wins] = useState([] as boolean[]);
     const [lastPlayer1Score, setLastPlayer1Score] = useState(0);
     const [lastPlayer2Score, setLastPlayer2Score] = useState(0);
+    const [slippi, setSlippi] = useState(null as Slippi | null);
+    const [slippiConnected, setSlippiConnected] = useState(false);
+    const [slippiPort, setSlippiPort] = useState(-1);
     const clientId = Math.random();
 
-    function save() {
+    function save(p1 = player1, p2 = player2) {
         const state: BoofState = {
             tournament: { name, match, phase, bestOf },
-            player1: player1,
-            player2: player2,
+            player1: p1,
+            player2: p2,
             commentators: commentators.filter(c => c !== null),
             tournamentUrl,
             lastPlayer1Score,
             lastPlayer2Score,
             player1Wins,
+            slippi: slippi || undefined,
+            slippiConnected,
         }
 
         if (activeSet) {
@@ -161,8 +167,8 @@ export default function Page() {
         return <div>{out}</div>;
     }
 
-    function load() {
-        fetch(getBackendHost() + "state")
+    async function load(): Promise<BoofState> {
+        return await fetch(getBackendHost() + "state")
             .then(res => res.json())
             .then((state: BoofState) => {
                 setName(state.tournament.name);
@@ -177,12 +183,20 @@ export default function Page() {
                 setPlayer1Wins(state.player1Wins);
                 setLastPlayer1Score(state.lastPlayer1Score);
                 setLastPlayer2Score(state.lastPlayer2Score);
+                setSlippi(state.slippi || null);
+                setSlippiConnected(state.slippiConnected);
+
+                if (state.slippi && slippiConnected && state.slippi.player1IsPort1 !== undefined) {
+                    onCharacterMatch(state.slippi.player1IsPort1, state.slippi);
+                }
 
                 if (state.activeSet) {
                     setActiveSet(state.activeSet);
                 }
 
                 loadInit(state.tournamentUrl);
+
+                return state;
             });
     }
 
@@ -245,12 +259,12 @@ export default function Page() {
 
     useEffect(() => console.log("sggPlayers:",sggPlayers), [sggPlayers]);
 
-    useEffect(load, []);
+    useEffect(() => { load().then() }, []);
     useEffect(() => {
         socket.on("update_state", (cid) => {
             console.log("update", cid);
             if (cid !== clientId) {
-                load();
+                load().then();
             }
         });
     }, []);
@@ -303,9 +317,38 @@ export default function Page() {
         });
     }
 
+    function onCharacterMatch(player1IsPort1: boolean, s = slippi) {
+        setSlippi({ ...s!!, player1IsPort1 });
+        setPlayer1({ 
+            ...player1, 
+            character: player1IsPort1 ? s!!.character1 : s!!.character2,
+            characterColor: player1IsPort1 ? s!!.characterColor1 : s!!.characterColor2,
+        });
+        setPlayer2({
+            ...player2,
+            character: player1IsPort1 ? s!!.character2 : s!!.character1,
+            characterColor: player1IsPort1 ? s!!.characterColor2 : s!!.characterColor1, 
+        });
+        setKey(Math.random());
+    }
+
+    function connectSlippi() {
+        fetch(getBackendHost() + "slippi/livestream", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ port: slippiPort })
+        }).then(() => setSlippiConnected(true));
+    }
+
+    function disconnectSlippi() {
+        fetch(getBackendHost() + "slippi/disconnect", { method: "POST" });
+        setSlippiConnected(false);
+        setSlippi(null);
+    }
+
     return <div style={{ height: "100vh" }}>
     <div>
-        <button style={{fontSize: "32px"}} onClick={save}>SAVE EVERYTHING</button>
+        <button style={{fontSize: "32px"}} onClick={() => save()}>SAVE EVERYTHING</button>
         {/* <h1>match is: {started 
             ? <span style={{color: "green"}}>STARTED</span> 
             : <span style={{color: "red"}}>NOT STARTED</span>
@@ -374,6 +417,37 @@ export default function Page() {
                     {sggPlayers.map(p => <span style={{fontSize: 12}}>- {p.player.name} ({p.entrantId})<br /></span>)}
                 </div>
                 <div style={{ float: "right", width: "50%" }}>
+                    <h1>realtime</h1>
+                    { slippiConnected 
+                        ? <>connected <button onClick={disconnectSlippi}>disconnect</button></>
+                        : <>
+                            disconnected. port:{" "}
+                            <input 
+                                type="number" 
+                                value={slippiPort} 
+                                onChange={e => setSlippiPort(e.target.valueAsNumber)}
+                            />{" "}
+                            <button onClick={connectSlippi}>connect</button>
+                        </>
+                    }<br />
+                    { 
+                        slippi && slippiConnected ?
+                            (slippi.player1IsPort1 === undefined
+                                ? <CharacterMatcher
+                                    character1={slippi.character1}
+                                    character2={slippi.character2}
+                                    color1={slippi.characterColor1}
+                                    color2={slippi.characterColor2}
+                                    player1={player1}
+                                    player2={player2}
+                                    onMatch={onCharacterMatch}
+                                />
+                                : <button
+                                    onClick={() => setSlippi({ ...slippi, player1IsPort1: undefined })}>
+                                        unbind characters
+                                </button>)
+                            : ""
+                    }
                     <h1>commentators</h1>
                     <button onClick={addCommentator}>add</button>
                     {commentators.map(comm =>
