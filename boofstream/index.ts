@@ -10,7 +10,6 @@ import { SlpRealTime, SlpLiveStream } from "@vinceau/slp-realtime";
 import fs from "fs";
 import { createServer } from "http";
 import { PlayerType } from "@slippi/slippi-js";
-import { parse } from "path";
 
 const app = express();
 const server = createServer(app);
@@ -192,23 +191,11 @@ app.get("/startgg/init", startgg.init);
 app.get("/startgg/sets", startgg.sets);
 app.post("/startgg/sets/report", startgg.report);
 
-function parseCharacter(player: PlayerType) {
-    const character: Character = player.characterId!!;
-
-    // TODO: no way to tell when zelda changes to sheik in slp-realtime, so
-    // assume they're probably playing sheik
-    // if (character === Character.ZELDA) {
-    //     return Character.SHEIK;
-    // }
-
-    return character;
-}
-
 function parseCharacterColor(player: PlayerType) {
     if (!player.characterColor) {
         return CharacterColor.DEFAULT;
     }
-    return CHARACTER_COLORS[parseCharacter(player)][player.characterColor - 1];
+    return CHARACTER_COLORS[player.characterId!!][player.characterColor - 1];
 }
 
 app.post("/slippi/livestream", async (req, res) => {
@@ -229,8 +216,8 @@ app.post("/slippi/livestream", async (req, res) => {
         state = { ...state, slippi: {
             port1: e.players[0].port,
             port2: e.players[1].port,
-            character1: parseCharacter(e.players[0]),
-            character2: parseCharacter(e.players[1]),
+            character1: e.players[0].characterId!!,
+            character2: e.players[1].characterId!!,
             characterColor1: parseCharacterColor(e.players[0]),
             characterColor2: parseCharacterColor(e.players[1]),
             player1IsPort1: state.slippi ? state.slippi.player1IsPort1 : undefined,
@@ -267,8 +254,6 @@ app.post("/slippi/livestream", async (req, res) => {
         const internalCharacterId2 = frame.players[slippi.port2 - 1]!!.post.internalCharacterId;
 
         let updated = false;
-
-        console.log("POST!", internalCharacterId1, internalCharacterId2);
 
         if (internalCharacterId1 == 7 && slippi.character1 === Character.ZELDA) { // sheik
             state.slippi!!.character1 = Character.SHEIK;
