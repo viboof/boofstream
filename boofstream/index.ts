@@ -197,9 +197,9 @@ function parseCharacter(player: PlayerType) {
 
     // TODO: no way to tell when zelda changes to sheik in slp-realtime, so
     // assume they're probably playing sheik
-    if (character === Character.ZELDA) {
-        return Character.SHEIK;
-    }
+    // if (character === Character.ZELDA) {
+    //     return Character.SHEIK;
+    // }
 
     return character;
 }
@@ -259,6 +259,46 @@ app.post("/slippi/livestream", async (req, res) => {
 
         console.log(state);
     });
+
+    livestream.playerFrame$.subscribe(frame => {        
+        const slippi = state.slippi!!;
+
+        const internalCharacterId1 = frame.players[slippi.port1 - 1]!!.post.internalCharacterId;
+        const internalCharacterId2 = frame.players[slippi.port2 - 1]!!.post.internalCharacterId;
+
+        let updated = false;
+
+        console.log("POST!", internalCharacterId1, internalCharacterId2);
+
+        if (internalCharacterId1 == 7 && slippi.character1 === Character.ZELDA) { // sheik
+            state.slippi!!.character1 = Character.SHEIK;
+            updated = true;
+        } else if (internalCharacterId1 == 19 && slippi.character1 === Character.SHEIK) { // zelda
+            state.slippi!!.character1 = Character.ZELDA;
+            updated = true;
+        }
+
+        if (internalCharacterId2 == 7 && slippi.character2 === Character.ZELDA) { // sheik
+            state.slippi!!.character2 = Character.SHEIK;
+            updated = true;
+        } else if (internalCharacterId2 == 19 && slippi.character2 == Character.SHEIK) { // zelda
+            state.slippi!!.character2 = Character.ZELDA;
+            updated = true;
+        }
+
+        if (!updated) return;
+
+        if (slippi.player1IsPort1 !== undefined) {
+            state.player1.character = slippi.player1IsPort1
+                ? slippi.character1
+                : slippi.character2;
+            state.player2.character = slippi.player1IsPort1
+                ? slippi.character2
+                : slippi.character1;
+        }        writeState();
+
+        io.emit("update_state", "slippi");
+    })
 
     res.send("ok");
     res.status(200);
