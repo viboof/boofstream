@@ -1,3 +1,7 @@
 {
-    "sggToken": "YOUR_TOKEN_HERE"
+    "sggToken": "YOUR_TOKEN_HERE",
+    "_comment": "fill this in if you want to use OBS websockets",
+    "obsPassword": "",
+    "obsStartedMainScene": "Main",
+    "obsNoGameScene": "Crowd Cam"
 }

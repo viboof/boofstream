@@ -5,11 +5,11 @@ type BoofState = {
     commentators: Commentator[],
     tournamentUrl: string,
     activeSet?: BoofSet,
-    player1Wins: boolean[],
     lastPlayer1Score: number,
     lastPlayer2Score: number,
     slippi?: Slippi,
     slippiConnected: boolean,
+    doObsSwitch: boolean,
 }
 
 type Slippi = {

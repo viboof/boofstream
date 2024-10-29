@@ -4,18 +4,32 @@ import { BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Pl
 
 import cors from "cors";
 import express from "express";
+import { OBSWebSocket } from "obs-websocket-js";
 import { Server } from "socket.io";
 import { SlpRealTime, SlpLiveStream } from "@vinceau/slp-realtime";
+import { PlayerType } from "@slippi/slippi-js";
 
 import fs from "fs";
 import { createServer } from "http";
-import { PlayerType } from "@slippi/slippi-js";
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 let livestream: SlpLiveStream | null = null;
 const realtime = new SlpRealTime();
+let started = false;
+const obs = new OBSWebSocket();
+
+const configFile = fs.readFileSync("config.json");
+const config = JSON.parse(configFile.toString("utf-8"));
+
+if (config.obsPassword) {
+    obs.connect("ws://127.0.0.1:4455", config.obsPassword);
+}
+
+function scene(sceneName: string) {
+    obs.call("SetCurrentProgramScene", { sceneName });
+}
 
 const DEFAULT_PLAYER: Player = {
     score: 0,
@@ -40,18 +54,18 @@ let state: BoofState = {
     player2: DEFAULT_PLAYER,
     commentators: [],
     tournamentUrl: "",
-    player1Wins: [],
     lastPlayer1Score: 0,
     lastPlayer2Score: 0,
     slippiConnected: false,
+    doObsSwitch: false,
 };
 
 if (fs.existsSync("out/state.json")) {
     state = JSON.parse(fs.readFileSync("out/state.json").toString("utf-8"));
 }
 
-const P1_COLOR = "rgb(254, 54, 54)";
-const P2_COLOR = "rgb(46, 137, 255)";
+const P1_COLOR = "#00a800";
+const P2_COLOR = "#0f7477";
 
 function convertCountry(country: string) {
     if (!country) return {};
@@ -195,6 +209,7 @@ function parseCharacterColor(player: PlayerType) {
     if (!player.characterColor) {
         return CharacterColor.DEFAULT;
     }
+    // @ts-ignore
     return CHARACTER_COLORS[player.characterId!!][player.characterColor - 1];
 }
 
@@ -221,7 +236,7 @@ app.post("/slippi/livestream", async (req, res) => {
             characterColor1: parseCharacterColor(e.players[0]),
             characterColor2: parseCharacterColor(e.players[1]),
             player1IsPort1: state.slippi ? state.slippi.player1IsPort1 : undefined,
-        }, slippiConnected: true };
+        }, slippiConnected: true, doObsSwitch: true, };
 
         const slippi = state.slippi!!;
 
@@ -241,14 +256,41 @@ app.post("/slippi/livestream", async (req, res) => {
                 : slippi.characterColor1;
         }
 
+        if (state.doObsSwitch) {
+            scene(config.obsStartedMainScene);
+        }
+
         writeState();
         io.emit("update_state", "slippi");
 
         console.log(state);
     });
 
+    livestream.gameEnd$.subscribe(e => {
+        const { slippi } = state;
+        if (state.doObsSwitch) {
+            scene(config.obsNoGameScene);
+        }
+        if (!slippi || !started || slippi.player1IsPort1 === undefined) return;
+
+        const player1Wins = e.placements[
+            (slippi.player1IsPort1 ? slippi.port1 : slippi.port2) - 1
+        ].position === 0;
+
+        if (player1Wins) {
+            state.player1.score++;
+        } else {
+            state.player2.score++;
+        }
+
+        writeState();
+        io.emit("update_state", "slippi");
+    });
+
     livestream.playerFrame$.subscribe(frame => {        
-        const slippi = state.slippi!!;
+        const slippi = state.slippi;
+
+        if (!slippi) return;
 
         const internalCharacterId1 = frame.players[slippi.port1 - 1]!!.post.internalCharacterId;
         const internalCharacterId2 = frame.players[slippi.port2 - 1]!!.post.internalCharacterId;
@@ -298,6 +340,13 @@ app.post("/slippi/disconnect", async (_, res) => {
     res.status(200);
     res.end();
 })
+
+app.post("/start", () => { 
+    started = true; 
+});
+app.post("/end", () => { 
+    started = false;
+});
 
 app.listen(1337, () => console.log("live!"));
 server.listen(1338);

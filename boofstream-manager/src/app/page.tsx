@@ -44,12 +44,12 @@ export default function Page() {
     const [player1Name, setPlayer1Name] = useState("");
     const [player2Name, setPlayer2Name] = useState("");
     const [activeSet, setActiveSet] = useState(null as BoofSet | null);
-    const [player1Wins, setPlayer1Wins] = useState([] as boolean[]);
     const [lastPlayer1Score, setLastPlayer1Score] = useState(0);
     const [lastPlayer2Score, setLastPlayer2Score] = useState(0);
     const [slippi, setSlippi] = useState(null as Slippi | null);
     const [slippiConnected, setSlippiConnected] = useState(false);
-    const [slippiPort, setSlippiPort] = useState(-1);
+    const [slippiPort, setSlippiPort] = useState(53742);
+    const [doObsSwitch, setDoObsSwitch] = useState(false);
     const clientId = Math.random();
 
     function save(p1 = player1, p2 = player2) {
@@ -61,9 +61,9 @@ export default function Page() {
             tournamentUrl,
             lastPlayer1Score,
             lastPlayer2Score,
-            player1Wins,
             slippi: slippi || undefined,
             slippiConnected,
+            doObsSwitch,
         }
 
         if (activeSet) {
@@ -180,11 +180,11 @@ export default function Page() {
                 setCommentators(state.commentators);
                 setTournamentUrl(state.tournamentUrl);
                 setKey(Math.random());
-                setPlayer1Wins(state.player1Wins);
                 setLastPlayer1Score(state.lastPlayer1Score);
                 setLastPlayer2Score(state.lastPlayer2Score);
                 setSlippi(state.slippi || null);
                 setSlippiConnected(state.slippiConnected);
+                setDoObsSwitch(state.doObsSwitch);
 
                 if (state.slippi && slippiConnected && state.slippi.player1IsPort1 !== undefined) {
                     onCharacterMatch(state.slippi.player1IsPort1, state.slippi);
@@ -271,18 +271,13 @@ export default function Page() {
     useEffect(() => setSggKey(Math.random()), [sggPlayers, sets]);
 
     function toggleStarted() {
-        if (started) {
-            fetch(getBackendHost() + "/end");
-        } else {
-            fetch(getBackendHost() + "/start");
-        }
+        fetch(getBackendHost() + (started ? "end" : "start"), { method: "post" });
         setStarted(!started);
     }
 
     function markWin(isPlayer1: boolean) {
         setLastPlayer1Score(player1.score);
         setLastPlayer2Score(player2.score);
-        setPlayer1Wins([ ...player1Wins, isPlayer1 ]);
 
         if (isPlayer1) {
             setPlayer1({ ...player1, score: player1.score + 1 });
@@ -294,8 +289,6 @@ export default function Page() {
     }
 
     function undoMarkWin() {
-        setPlayer1Wins(player1Wins.slice(0, player1Wins.length - 1));
-
         player1.score = lastPlayer1Score;
         player2.score = lastPlayer2Score;
     }
@@ -309,10 +302,9 @@ export default function Page() {
         fetch(getBackendHost() + "startgg/sets/report", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ setId, player1Id, player2Id, player1Wins }),
+            body: JSON.stringify({ setId, player1Id, player2Id }),
         }).then(res => {
             setReportSetConfirm(false);
-            setPlayer1Wins([]);
             res.text().then(t => console.log("report set result: ", t));
         });
     }
@@ -349,10 +341,10 @@ export default function Page() {
     return <div style={{ height: "100vh" }}>
     <div>
         <button style={{fontSize: "32px"}} onClick={() => save()}>SAVE EVERYTHING</button>
-        {/* <h1>match is: {started 
+        <h1>match is: {started 
             ? <span style={{color: "green"}}>STARTED</span> 
             : <span style={{color: "red"}}>NOT STARTED</span>
-        } <button onClick={() => toggleStarted()}>{started ? "end" : "start"}</button></h1> */}
+        } <button onClick={() => toggleStarted()}>{started ? "end" : "start"}</button></h1>
     </div>
     <div style={{ width: "100%", height: "100%", display: "block" }}>
         <div style={{ float: "left", width: "50%", height: "100%", }}>
@@ -396,17 +388,16 @@ export default function Page() {
                         ? `${player1Name} v. ${player2Name} - ${match}`
                         : "none"
                     } <br />
-                    win log: {player1Wins.map(p1 => p1 ? "p1 " : "p2 ")}
                     <button onClick={() => undoMarkWin()}>undo</button>
                     <br />
-                    {!reportSetConfirm
+                    {/* {!reportSetConfirm
                         ? <button onClick={reportSet}>report set</button>
                         : <>
                             report {player1.score} {player1.name} - {player2.name} {player2.score}?{" "}
                             <button onClick={() => reportSet()}>yes</button> /{" "}
                             <button onClick={() => setReportSetConfirm(false)}>no</button>
                         </>
-                    }<br />
+                    }<br /> */}
                     load set:<br />
                     <input type="checkbox" checked={showCompleted} onChange={e => setShowCompleted(e.target.checked)} />{" "}
                     show completed<br/>
@@ -430,6 +421,11 @@ export default function Page() {
                             <button onClick={connectSlippi}>connect</button>
                         </>
                     }<br />
+                    do obs switch: <input 
+                        type="checkbox" 
+                        checked={doObsSwitch} 
+                        onChange={e => setDoObsSwitch(e.target.checked)}
+                    /><br />
                     { 
                         slippi && slippiConnected ?
                             (slippi.player1IsPort1 === undefined

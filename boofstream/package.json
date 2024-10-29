@@ -20,6 +20,7 @@
     "@vinceau/slp-realtime": "^4.0.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "obs-websocket-js": "^5.0.6",
     "rxjs": "^6.6.7",
     "socket.io": "^4.8.0"
   }
