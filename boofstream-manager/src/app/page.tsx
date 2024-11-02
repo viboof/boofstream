@@ -225,7 +225,7 @@ export default function Page() {
         const json = await res.json()
         if (json.error) {
             console.error("ERROR LOADING PLAYERS:", json.error);
-            await loadPlayers(url);
+            // await loadPlayers(url);
             return;
         }
         console.log("setting sggPlayers:",json.players);
@@ -237,7 +237,7 @@ export default function Page() {
         const json = await res.json();
         if (json.error) {
             console.error("ERROR LOADING SETS:", json.error);
-            await loadSets(url);
+            // await loadSets(url);
             return;
         }
         setSets(json);

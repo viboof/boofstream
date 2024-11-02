@@ -169,6 +169,8 @@ async function _init(req: Request, res: Response) {
         const participant = entrant.participants[0];
         const player = participant.player;
 
+        if (!player.user) player.user = {};
+
         const hasLoc = !!player.user.location;
 
         players.push({ entrantId: entrant.id, player: {
