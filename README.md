@@ -1,6 +1,7 @@
 # boofstream
-boofstream is a simple streaming tool created by viboof for use in the
-[Munchie Bar Melee Extravaganza](https://start.gg/mbme) broadcasts.
+boofstream is a simple streaming tool created by viboof originally for use in
+the [Munchie Bar Melee Extravaganza](https://start.gg/mbme) (RIP) broadcasts,
+and is now in use in various random viboof-produced tournaments.
 
 ## layouts
 boofstream is (somewhat) compatible with TournamentStreamHelper layouts (tested

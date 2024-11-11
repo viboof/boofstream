@@ -86,7 +86,7 @@ function convertState(country: string, state: string) {
 }
 
 function convertCharacter(character?: Character, characterColor?: CharacterColor) {
-    if (!character) return {};
+    if (!character && character !== 0) return {};
 
     const color = characterColor == CharacterColor.DEFAULT
         ? 0

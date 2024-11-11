@@ -105,6 +105,12 @@ export default function Page() {
         setCommentators(commentators.map(c => c && c.id === id ? null : c));
     }
 
+    function swap() {
+        setPlayer1(player2);
+        setPlayer2(player1);
+        setKey(Math.random());
+    }
+
     function computePlayerMap(): Map<number, StartggPlayer> {
         const map: Map<number, StartggPlayer> = new Map();
 
@@ -310,6 +316,7 @@ export default function Page() {
     }
 
     function onCharacterMatch(player1IsPort1: boolean, s = slippi) {
+	console.log("onCharMatch");
         setSlippi({ ...s!!, player1IsPort1 });
         setPlayer1({ 
             ...player1, 
@@ -344,7 +351,9 @@ export default function Page() {
         <h1>match is: {started 
             ? <span style={{color: "green"}}>STARTED</span> 
             : <span style={{color: "red"}}>NOT STARTED</span>
-        } <button onClick={() => toggleStarted()}>{started ? "end" : "start"}</button></h1>
+        } <button onClick={() => toggleStarted()}>{started ? "end" : "start"}</button>{" "}
+        <button onClick={() => swap()}>swap players</button>
+        </h1>
     </div>
     <div style={{ width: "100%", height: "100%", display: "block" }}>
         <div style={{ float: "left", width: "50%", height: "100%", }}>

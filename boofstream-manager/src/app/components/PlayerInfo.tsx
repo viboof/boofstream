@@ -11,6 +11,9 @@ function asset(name: string, path: string): JSX.Element {
 };
 
 function characterAsset(characterName: string, colorName: string): string {
+    //console.log("characterAsset", characterName, colorName);
+    if (!characterName || !colorName) return "";
+
     // @ts-ignore
     const character: Character = Character[characterName];
     // @ts-ignore
@@ -57,7 +60,7 @@ export default function PlayerInfo(props: {
             : NOTHING_OPTION,
     );
     const [character, setCharacter] = useState(
-        props.value.character
+        props.value.character || props.value.character === 0
             ? mapCharacter(Character[props.value.character])
             : NOTHING_OPTION
     );
@@ -70,8 +73,14 @@ export default function PlayerInfo(props: {
             ),
     );
     const [seed, setSeed] = useState(props.value.seed);
+    const [firstRun, setFirstRun] = useState(true);
  
     useEffect(() => {
+        if (firstRun) {
+            setFirstRun(false);
+            return;
+        }
+        console.log("onChange", name, character, characterColor);
         props.onChange({
             score, 
             sponsor, 
@@ -82,9 +91,9 @@ export default function PlayerInfo(props: {
             country: country.value, 
             state: state.value, 
             // @ts-ignore
-            character: character.value ? Character[character.value] : undefined, 
+            character: character.value !== 0 && !character.value ? Character[character.value] : undefined, 
             // @ts-ignore
-            characterColor: characterColor.value ? CharacterColor[characterColor.value] : undefined,
+            characterColor: characterColor.value !== 0 && !characterColor.value ? CharacterColor[characterColor.value] : undefined,
             seed,
         });
     }, [score, sponsor, name, losers, pronouns, twitter, country, state, character, characterColor]);
@@ -111,7 +120,7 @@ export default function PlayerInfo(props: {
     }
 
     function updateCharacter(character: { value: string, label: JSX.Element }) {
-        if (character.value) {
+        if (character.value === 0 || character.value) {
             setCharacterColor({
                 value: "DEFAULT",
                 label: asset("DEFAULT", characterAsset(character.value, "DEFAULT"))

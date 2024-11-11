@@ -9,7 +9,7 @@ export function getSocketHost() {
 }
 
 export function getCharacterAssetName(character: Character, color: CharacterColor) {
-    console.log("getCharacterAssetName", character, color);
+    //console.log("getCharacterAssetName", character, color);
     
     const colorNum = color === CharacterColor.DEFAULT
         ? 0
