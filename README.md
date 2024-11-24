@@ -1,4 +1,4 @@
-![screenshot of boofstream](https://github.com/user-attachments/assets/4c7da4ec-f7f5-4f72-9392-92a1a72b11cf)
+![screenshot of boofstream](https://github.com/user-attachments/assets/f4a74f02-8f24-4d83-9d01-3811095f9516)
 
 # boofstream
 boofstream is a simple streaming tool created by viboof originally for use in
