@@ -248,14 +248,14 @@ export default function CommentatorView(
                 <div>
                     <center>
                     <h1 style={{ color: state.slippiConnected ? "green" : "red" }}>
-                        console is{state.slippiConnected ? "" : " NOT"} connected!
+                        wii is{state.slippiConnected ? "" : " NOT"} connected!
                     </h1>
                     </center>
                 </div>
                 <div>
                     <center>
                         <BigButton onClick={toggleSlippiConnection}>
-                            {state.slippiConnected ? "disconnect from" : "connect to"} console
+                            {state.slippiConnected ? "disconnect from" : "connect to"} wii
                         </BigButton>
                     </center>
                 </div>
@@ -285,7 +285,7 @@ export default function CommentatorView(
                 <Modal title="select set" isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
                     <SetSelector sets={sets} onSelect={loadSet} playerMap={playerMap} />
                 </Modal>
-                
+
                 <Modal title="settings" isOpen={showSettingsModal} onClose={() => setShowSettingsModal(false)}>
                     <div>
                         tournament url (make sure to include the /event/melee-singles part!):<br />
