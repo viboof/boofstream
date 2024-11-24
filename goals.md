@@ -1,0 +1,5 @@
+- select set - DONE
+- tournament/match/phase/bestof info boxes - DONE
+- do obs switch - DONE
+- fix LRAS
+- unbind character button - DONE

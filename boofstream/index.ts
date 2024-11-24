@@ -7,7 +7,7 @@ import express from "express";
 import { OBSWebSocket } from "obs-websocket-js";
 import { Server } from "socket.io";
 import { SlpRealTime, SlpLiveStream } from "@vinceau/slp-realtime";
-import { PlayerType } from "@slippi/slippi-js";
+import { ConnectionEvent, ConnectionStatus, ConsoleConnection, PlayerType } from "@slippi/slippi-js";
 
 import fs from "fs";
 import { createServer } from "http";
@@ -122,7 +122,7 @@ function convertPlayer(player: Player, color: string) {
         score: player.score,
         player: {
             "1": {
-                name: player.name + (player.losers ? " [L]" : ""),
+                name: player.name + (player.losers && config.appendLToLosers ? " [L]" : ""),
                 team: player.sponsor,
                 pronoun: player.pronouns,
                 twitter: player.twitter,
@@ -220,7 +220,35 @@ app.post("/slippi/livestream", async (req, res) => {
     }
 
     livestream = new SlpLiveStream("console");
-    await livestream.start("127.0.0.1", req.body.port);
+
+    function onDisconnect() {
+        livestream?.end();
+        livestream = null;
+
+        // wait a second to avoid fighting with the client
+        setTimeout(() => {
+            state.slippiConnected = false;
+            state.slippi = undefined;
+            writeState();
+            io.emit("update_state", "slippi");
+        }, 250);
+    }
+
+    livestream.connection.on(ConnectionEvent.STATUS_CHANGE, (status: ConnectionStatus) => {
+        if (status == ConnectionStatus.DISCONNECTED) {
+            onDisconnect();
+        }
+    });
+    livestream.connection.on(ConnectionEvent.ERROR, onDisconnect);
+
+    try {
+        await livestream.start("127.0.0.1", req.body.port);
+    } catch {
+        onDisconnect();
+        res.send("ok");
+        res.status(201);
+        return;
+    }
     
     realtime.setStream(livestream);
 
@@ -236,7 +264,7 @@ app.post("/slippi/livestream", async (req, res) => {
             characterColor1: parseCharacterColor(e.players[0]),
             characterColor2: parseCharacterColor(e.players[1]),
             player1IsPort1: state.slippi ? state.slippi.player1IsPort1 : undefined,
-        }, slippiConnected: true, doObsSwitch: true, };
+        }, slippiConnected: true };
 
         const slippi = state.slippi!!;
 
@@ -271,11 +299,17 @@ app.post("/slippi/livestream", async (req, res) => {
         if (state.doObsSwitch) {
             scene(config.obsNoGameScene);
         }
-        if (!slippi || !started || slippi.player1IsPort1 === undefined) return;
+        if (!slippi || slippi.player1IsPort1 === undefined) return;
 
-        const player1Wins = e.placements[
-            (slippi.player1IsPort1 ? slippi.port1 : slippi.port2) - 1
-        ].position === 0;
+        const player1Port = slippi.player1IsPort1 ? slippi.port1 : slippi.port2;
+        const player1Wins = e.placements[player1Port - 1].position === 0;
+    
+        console.log("LRAS", e.lrasInitiatorIndex);
+
+        if (e.lrasInitiatorIndex !== null) {
+            // LRAS - do nothing
+            return;
+        }
 
         if (player1Wins) {
             state.player1.score++;
@@ -347,6 +381,10 @@ app.post("/start", () => {
 app.post("/end", () => { 
     started = false;
 });
+
+app.get("/die", async () => {
+    throw new Error("die");
+})
 
 app.listen(1337, () => console.log("live!"));
 server.listen(1338);

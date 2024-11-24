@@ -1,0 +1,28 @@
+.column {
+  float: left;
+  width: 33%;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100%; /* Ensure the column takes up enough height to center content vertically */
+}
+
+.midColumn {
+  float: left;
+  width: 33%;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100%; /* Ensure the column takes up enough height to center content vertically */
+}
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+.bigInput {
+  font-size: 16px;
+}
