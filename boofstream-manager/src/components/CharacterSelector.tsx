@@ -1,7 +1,6 @@
 "use client";
 
 import { Character, CharacterColor } from "@/app/types/boof";
-import { useState } from "react";
 import BoofSelect, { ValueObj } from "./BoofSelect";
 import CharacterAsset from "./CharacterAsset";
 

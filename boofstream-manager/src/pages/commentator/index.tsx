@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import CommentatorView from "./CommentatorView";
 import { io } from "socket.io-client";
 
-export default function CommentatorPage() {
-    const clientId = Math.random();
+const clientId = Math.random();
 
+export default function CommentatorPage() {
     const [state, setState] = useState(undefined as BoofState | undefined);
 
     useEffect(() => {
@@ -37,7 +37,11 @@ export default function CommentatorPage() {
     });
 
     socket.on("update_state", (cid) => {
-        console.log("update", cid);
+        console.log("update", cid, clientId);
+        if (cid === clientId.toString()) {
+            console.log("ignoring - it us");
+            return;
+        }
         fetch(getBackendHost() + "state?_=" + Math.random())
             .then(res => res.json())
             .then(setState)

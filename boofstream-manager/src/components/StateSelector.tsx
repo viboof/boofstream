@@ -7,6 +7,8 @@ export function StateSelector(
     { value, country, onChange }:
     { value: string, country: string, onChange: (state: string) => void },
 ) {
+    console.log("StateSelector render, value/country:", value, country);
+
     const [stateCodes, setStateCodes] = useState([] as string[]);
 
     useEffect(() => {

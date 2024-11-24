@@ -33,7 +33,13 @@ export default function SimplePlayer({ player, isPlayer1, sggPlayers, onChange, 
         <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%" }}>
         <div>
             <center>
-                <BigInput value={player.sponsor} style={{ maxWidth: "128px", color }} />
+                <BigInput 
+                    value={player.sponsor} 
+                    onChange={e => onChange({ ...player, sponsor: e.target.value })}
+                    style={{ maxWidth: "128px", color }} 
+                    onKeyDown={saveIfEnter}
+                    onBlur={() => onSave(player)}
+                />
                 <PlayerSelector 
                     value={player.name} 
                     sggPlayers={sggPlayers}
