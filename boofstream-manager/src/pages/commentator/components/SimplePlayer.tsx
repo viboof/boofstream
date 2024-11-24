@@ -55,19 +55,6 @@ export default function SimplePlayer({ player, isPlayer1, sggPlayers, onChange, 
                 checked={player.losers} 
                 onChange={e => onChangeAndSave({ ...player, losers: e.target.checked })}
             /><br />
-            character: <CharacterSelector
-                value={player.character} 
-                onChange={c => onChangeAndSave({ 
-                    ...player, 
-                    character: c, 
-                    characterColor: c === undefined ? undefined : CharacterColor.DEFAULT 
-                })} 
-            />
-            color: <CharacterColorSelector
-                character={player.character}
-                value={player.characterColor}
-                onChange={c => onChangeAndSave({...player, characterColor: c })}
-            />
             pronouns: <input 
                 value={player.pronouns} 
                 onChange={e => onChange({ ...player, pronouns: e.target.value })}
@@ -87,6 +74,19 @@ export default function SimplePlayer({ player, isPlayer1, sggPlayers, onChange, 
                 onKeyDown={saveIfEnter}
                 onBlur={() => onSave(player)}
             /><br />
+            character: <CharacterSelector
+                value={player.character} 
+                onChange={c => onChangeAndSave({ 
+                    ...player, 
+                    character: c, 
+                    characterColor: c === undefined ? undefined : CharacterColor.DEFAULT 
+                })} 
+            />
+            color: <CharacterColorSelector
+                character={player.character}
+                value={player.characterColor}
+                onChange={c => onChangeAndSave({...player, characterColor: c })}
+            />
             country: <CountrySelector
                 value={player.country}
                 onChange={country => onChangeAndSave({ ...player, country, state: "" })}

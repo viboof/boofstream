@@ -8,7 +8,6 @@ export type ValueObj<T> = {
 };
 
 const EMPTY_OPTION = { label: <div style={{ height: "24px" }}></div> };
-
 export default function BoofSelect<T>(props: { 
     value?: T,
     options: ValueObj<T>[],

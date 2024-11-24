@@ -12,6 +12,9 @@ import BigButton from "@/components/BigButton";
 import PortMatcher from "@/components/PortMatcher";
 import SetSelector from "@/components/SetSelector";
 import TournamentInfo from "@/components/TournamentInfo";
+import ReactModal from "react-modal";
+import Modal from "@/components/Modal";
+import Hr from "@/components/Hr";
 
 const DEFAULT_PLAYER: Player = {
     score: 0,
@@ -35,6 +38,9 @@ export default function CommentatorView(
     const [slippiPort, setSlippiPort] = useState(53742);
 
     const [tournamentUrl, setTournamentUrl] = useState(undefined as string | undefined);
+
+    const [showChangeSetModal, setShowChangeSetModal] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     async function loadPlayers(tourneyUrl: string | undefined = tournamentUrl) {
         if (!tourneyUrl) return;
@@ -192,6 +198,8 @@ export default function CommentatorView(
             player1,
             player2,
         });
+
+        setShowChangeSetModal(false);
     }
 
     function resetScores() {
@@ -225,7 +233,7 @@ export default function CommentatorView(
         <center>
             <Image src={Boof} alt="boof logo" /> <h1 style={{ display: "inline", fontSize: 64 }}>boofstream</h1>
         </center>
-		<hr style={{ margin: "10px" }} />
+		<Hr margin={16} />
         <div className="column">
             <SimplePlayer 
                 player={state.player1} 
@@ -251,25 +259,6 @@ export default function CommentatorView(
                         </BigButton>
                     </center>
                 </div>
-                <div>
-                    <center>
-                        port: <input 
-                            type="number" 
-                            value={slippiPort} 
-                            onChange={e => setSlippiPort(e.target.valueAsNumber)}
-                        />
-                    </center>
-                </div>
-                <div>
-                    <center>
-                        automatically switch OBS scenes:{" "}
-                        <input 
-                            type="checkbox"
-                            checked={state.doObsSwitch}
-                            onChange={e => onChangeAndSave({ ...state, doObsSwitch: e.target.checked })}
-                        />
-                    </center>
-                </div>
                 <hr style={{ marginTop: 16, marginBottom: 8 }} />
                 <TournamentInfo 
                     value={state.tournament} 
@@ -277,18 +266,11 @@ export default function CommentatorView(
                     onSave={tournament => onSave({ ...state, tournament })}
                 />
                 <hr style={{ marginBottom: 16, marginTop: 8 }} />
-                <div>
-                    tournament url (make sure to include the /event/melee-singles part!):<br />
-                </div>
-                <input
-                    value={tournamentUrl}
-                    onChange={e => setTournamentUrl(e.target.value)}
-                />
-                <BigButton onClick={() => loadTournament()}>load tournament</BigButton>
-                <div><center>{sggPlayers.length} players loaded!</center></div>
                 <BigButton onClick={swapPlayers}>swap players</BigButton>
                 <BigButton onClick={resetScores}>reset scores</BigButton>
                 <BigButton onClick={resetMatch}>reset match</BigButton>
+                <BigButton onClick={() => setShowChangeSetModal(true)}>change set</BigButton>
+                <BigButton onClick={() => setShowSettingsModal(true)}>settings</BigButton>
                 {state.slippiConnected && state.slippi ?
                     <PortMatcher 
                         player1={state.player1} 
@@ -297,7 +279,37 @@ export default function CommentatorView(
                     /> :
                     ""
                 }
-                <SetSelector sets={sets} onSelect={loadSet} playerMap={playerMap} />
+
+                {/* ---- BEGIN MODALS ---- */}
+
+                <Modal title="select set" isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
+                    <SetSelector sets={sets} onSelect={loadSet} playerMap={playerMap} />
+                </Modal>
+                
+                <Modal title="settings" isOpen={showSettingsModal} onClose={() => setShowSettingsModal(false)}>
+                    <div>
+                        tournament url (make sure to include the /event/melee-singles part!):<br />
+                    </div>
+                    <input
+                        style={{ display: "block", width: "100%" }}
+                        value={tournamentUrl}
+                        onChange={e => setTournamentUrl(e.target.value)}
+                    />
+                    <button onClick={() => loadTournament()}>load tournament</button><br />
+                    {sggPlayers.length} players loaded!<br />
+                    <Hr />
+                    slippi port: <input 
+                        type="number" 
+                        value={slippiPort} 
+                        onChange={e => setSlippiPort(e.target.valueAsNumber)}
+                    /><br />
+                    automatically switch OBS scenes:{" "}
+                    <input 
+                        type="checkbox"
+                        checked={state.doObsSwitch}
+                        onChange={e => onChangeAndSave({ ...state, doObsSwitch: e.target.checked })}
+                    />
+                </Modal>
             </div>
         </div>
         <div className="column">
