@@ -140,7 +140,7 @@ export default function CommentatorView(
     }
 
     function resetMatch() {
-        const slippi: Slippi | undefined = state.slippi;
+        const slippi = state.slippi;
 
         if (slippi) {
             slippi.player1IsPort1 = undefined;
@@ -191,6 +191,29 @@ export default function CommentatorView(
             },
             player1,
             player2,
+        });
+    }
+
+    function resetScores() {
+        onChangeAndSave({ 
+            ...state, 
+            player1: { ...state.player1, score: 0 },
+            player2: { ...state.player2, score: 0 },
+        });
+    }
+
+    function swapPlayers() {
+        let slippi = state.slippi;
+
+        if (slippi && slippi.player1IsPort1 !== undefined && slippi.player1IsPort1 !== null) {
+            slippi.player1IsPort1 = !slippi.player1IsPort1;
+        }
+
+        onChangeAndSave({
+            ...state,
+            slippi,
+            player1: state.player2,
+            player2: state.player1,
         });
     }
 
@@ -263,8 +286,8 @@ export default function CommentatorView(
                 />
                 <BigButton onClick={() => loadTournament()}>load tournament</BigButton>
                 <div><center>{sggPlayers.length} players loaded!</center></div>
-                <BigButton>swap players</BigButton>
-                <BigButton>reset score</BigButton>
+                <BigButton onClick={swapPlayers}>swap players</BigButton>
+                <BigButton onClick={resetScores}>reset scores</BigButton>
                 <BigButton onClick={resetMatch}>reset match</BigButton>
                 {state.slippiConnected && state.slippi ?
                     <PortMatcher 
