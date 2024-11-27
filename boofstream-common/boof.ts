@@ -11,6 +11,7 @@ type BoofState = {
     slippiConnected: boolean,
     doObsSwitch: boolean,
     started: boolean,
+    slippiPort: number,
 }
 
 type Slippi = {

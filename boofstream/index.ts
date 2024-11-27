@@ -59,6 +59,7 @@ let state: BoofState = {
     slippiConnected: false,
     doObsSwitch: false,
     started: false,
+    slippiPort: 53742,
 };
 
 if (fs.existsSync("out/state.json")) {

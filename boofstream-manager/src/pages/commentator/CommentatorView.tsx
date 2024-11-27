@@ -35,12 +35,12 @@ export default function CommentatorView(
     const [sggPlayers, setSggPlayers] = useState([] as StartggPlayer[]);
     const [sets, setSets] = useState([] as BoofSet[]);
     const [loaded, setLoaded] = useState(false);
-    const [slippiPort, setSlippiPort] = useState(53742);
-
-    const [tournamentUrl, setTournamentUrl] = useState(undefined as string | undefined);
 
     const [showChangeSetModal, setShowChangeSetModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+    const slippiPort = state.slippiPort;
+    const tournamentUrl = state.tournamentUrl;
 
     async function loadPlayers(tourneyUrl: string | undefined = tournamentUrl) {
         if (!tourneyUrl) return;
@@ -73,15 +73,10 @@ export default function CommentatorView(
         setSets(json);
     }
 
-    function loadTournamentUrl() {
-        const tourneyUrl = localStorage.getItem("tournamentUrl") || undefined;
-        setTournamentUrl(tourneyUrl);
-        return tourneyUrl;
-    }
-
     useEffect(() => { 
         (async () => {
-            const tourneyUrl = loadTournamentUrl();
+            const tourneyUrl = tournamentUrl;
+
             if (tourneyUrl) {
                 await loadPlayers(tourneyUrl);
                 await loadSets(tourneyUrl);
@@ -94,10 +89,8 @@ export default function CommentatorView(
     function loadTournament() {
         if (!tournamentUrl) {
             setSggPlayers([]);
-            localStorage.removeItem("tournamentUrl");
             return;
         }
-        localStorage.setItem("tournamentUrl", tournamentUrl);
         loadPlayers().then(() => loadSets(tournamentUrl).then());
     }
 
@@ -301,7 +294,7 @@ export default function CommentatorView(
                     <input
                         style={{ display: "block", width: "100%" }}
                         value={tournamentUrl}
-                        onChange={e => setTournamentUrl(e.target.value)}
+                        onChange={e => onChangeAndSave({ ...state, tournamentUrl: e.target.value })}
                     />
                     <button onClick={() => loadTournament()}>load tournament</button><br />
                     {sggPlayers.length} players loaded!<br />
@@ -309,7 +302,7 @@ export default function CommentatorView(
                     slippi port: <input 
                         type="number" 
                         value={slippiPort} 
-                        onChange={e => setSlippiPort(e.target.valueAsNumber)}
+                        onChange={e => onChangeAndSave({ ...state, slippiPort: e.target.valueAsNumber})}
                     /><br />
                     automatically switch OBS scenes:{" "}
                     <input 
