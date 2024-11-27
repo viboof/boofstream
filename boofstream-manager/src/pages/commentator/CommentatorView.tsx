@@ -245,7 +245,7 @@ export default function CommentatorView(
         </div>
         <div className="midColumn">
             <div style={{ display: "flex", flexDirection: "column" }}>
-                <div>
+                <div style={{ width: "25vw" }}>
                     <center>
                     <h1 style={{ color: state.slippiConnected ? "green" : "red" }}>
                         wii is{state.slippiConnected ? "" : " NOT"} connected!
@@ -266,6 +266,14 @@ export default function CommentatorView(
                     onSave={tournament => onSave({ ...state, tournament })}
                 />
                 <hr style={{ marginBottom: 16, marginTop: 8 }} />
+
+                <center>click me when {state.started ? "set is over" : "handwarmers are done"}:</center>
+                <BigButton 
+                    color={state.started ? "red" : "#00ff00"}
+                    onClick={() => onChangeAndSave({ ...state, started: !state.started })}
+                >
+                    {state.started ? "end" : "start"} set
+                </BigButton>
                 <BigButton onClick={swapPlayers}>swap players</BigButton>
                 <BigButton onClick={resetScores}>reset scores</BigButton>
                 <BigButton onClick={resetMatch}>reset match</BigButton>

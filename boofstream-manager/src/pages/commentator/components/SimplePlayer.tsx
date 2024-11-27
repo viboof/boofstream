@@ -47,7 +47,11 @@ export default function SimplePlayer({ player, isPlayer1, sggPlayers, onChange, 
                     onKeyDown={saveIfEnter}
                     onBlur={() => onSave(player)}
                     onPlayerSelect={onChangeAndSave}
-                />
+                /> <input 
+                    type="checkbox" 
+                    checked={player.losers} 
+                    onChange={e => onChangeAndSave({ ...player, losers: e.target.checked })}
+                /> [L]
             </center>
         </div>
         <div>
@@ -56,25 +60,23 @@ export default function SimplePlayer({ player, isPlayer1, sggPlayers, onChange, 
             </center>
         </div>
         <div style={{ display: "block" }}>
-            losers: <input 
-                type="checkbox" 
-                checked={player.losers} 
-                onChange={e => onChangeAndSave({ ...player, losers: e.target.checked })}
-            /><br />
-            pronouns: <input 
+            pronouns:<br /><BigInput 
+                style={{ width: "100%" }}
                 value={player.pronouns} 
                 onChange={e => onChange({ ...player, pronouns: e.target.value })}
                 onKeyDown={saveIfEnter}
                 onBlur={() => onSave(player)}
             /><br />
-            twitter: <input 
+            twitter:<br /><BigInput 
+                style={{ width: "100%" }}
                 value={player.twitter} 
                 onChange={e => onChange({ ...player, twitter: e.target.value })}
                 onKeyDown={saveIfEnter}
                 onBlur={() => onSave(player)}
             /><br />
-            seed: <input
+            seed:<br /><BigInput
                 type="number"
+                style={{ width: "100%" }}
                 value={player.seed}
                 onChange={e => onChange({ ...player, seed: e.target.valueAsNumber })}
                 onKeyDown={saveIfEnter}

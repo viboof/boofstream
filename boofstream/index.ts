@@ -58,6 +58,7 @@ let state: BoofState = {
     lastPlayer2Score: 0,
     slippiConnected: false,
     doObsSwitch: false,
+    started: false,
 };
 
 if (fs.existsSync("out/state.json")) {
@@ -299,14 +300,17 @@ app.post("/slippi/livestream", async (req, res) => {
         if (state.doObsSwitch) {
             scene(config.obsNoGameScene);
         }
-        if (!slippi || slippi.player1IsPort1 === undefined) return;
+
+        console.log("started:", state.started, "!slippi:", !slippi, "p1IsP1:", slippi?.player1IsPort1)
+
+        if (!state.started || !slippi || slippi.player1IsPort1 === undefined) return;
 
         const player1Port = slippi.player1IsPort1 ? slippi.port1 : slippi.port2;
         const player1Wins = e.placements[player1Port - 1].position === 0;
     
         console.log("LRAS", e.lrasInitiatorIndex);
 
-        if (e.lrasInitiatorIndex !== null) {
+        if (e.lrasInitiatorIndex !== -1) {
             // LRAS - do nothing
             return;
         }
