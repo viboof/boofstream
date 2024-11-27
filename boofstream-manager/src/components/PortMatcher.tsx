@@ -26,10 +26,12 @@ export default function PortMatcher(props: {
         <center>
         <span>
             which character is{" "}
+            <strong>
             {props.player1.sponsor 
                 ? <span style={{ color: "red" }}>{props.player1.sponsor} </span>
                 : ""
             } {props.player1.name}?
+            </strong>
         </span><br />
         <a href="#" onClick={getOnClick(true)}><CharacterAsset 
             character={props.slippi.character1} 

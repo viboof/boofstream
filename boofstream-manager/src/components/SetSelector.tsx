@@ -11,13 +11,22 @@ export default function SetSelector(props: {
 
     return <div>
         <span>
-            show completed sets?{" "}
+            <center>show completed sets?{" "}
             <input 
                 type="checkbox"
                 checked={showCompleted} 
                 onChange={e => setShowCompleted(e.target.checked)}
-            />
-            {
+            /></center>
+            <table>
+                <thead>
+                    <tr>
+                    <th>player 1</th>
+                    <th>player 2</th>
+                    <th>match</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {
                 props.sets
                     .filter(set => showCompleted || !set.completed)
                     .map(set => <SetInfo 
@@ -26,6 +35,8 @@ export default function SetSelector(props: {
                         onClick={() => props.onSelect(set)} 
                     />)
                 }
+                </tbody>
+            </table>
         </span>
     </div>;
 }
