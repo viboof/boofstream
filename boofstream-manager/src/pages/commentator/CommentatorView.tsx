@@ -243,7 +243,7 @@ export default function CommentatorView(
                 onSave={player1 => onSave({ ...state, player1 })}
             />
         </div>
-        <div className="midColumn">
+        <div className="column">
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ width: "25vw" }}>
                     <center>
