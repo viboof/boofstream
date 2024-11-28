@@ -5,9 +5,10 @@ import BigButton from "./BigButton";
 import Hr from "./Hr";
 
 export default function Modal(
-    { isOpen, children, title, onClose }: React.PropsWithChildren<{ 
+    { isOpen, children, title, adamMode, onClose }: React.PropsWithChildren<{ 
         isOpen: boolean,
         title: string,
+        adamMode: boolean,
         onClose: () => void,
     }>) {
     const style = {
@@ -18,7 +19,8 @@ export default function Modal(
             bottom: "auto",
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
-            maxHeight: "75%"
+            maxHeight: "75%",
+            fontFamily: adamMode ? "sans-serif" : "Comic Sans MS"
         }
     };
 

@@ -12,7 +12,6 @@ import BigButton from "@/components/BigButton";
 import PortMatcher from "@/components/PortMatcher";
 import SetSelector from "@/components/SetSelector";
 import TournamentInfo from "@/components/TournamentInfo";
-import ReactModal from "react-modal";
 import Modal from "@/components/Modal";
 import Hr from "@/components/Hr";
 
@@ -38,6 +37,7 @@ export default function CommentatorView(
 
     const [showChangeSetModal, setShowChangeSetModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [changeSetLoading, setChangeSetLoading] = useState(false);
 
     const slippiPort = state.slippiPort;
     const tournamentUrl = state.tournamentUrl;
@@ -222,7 +222,7 @@ export default function CommentatorView(
         return null;
     }
 
-    return <div style={{ margin: "32px" }}>
+    return <div style={{ margin: "32px", fontFamily: state.adamMode ? "sans-serif" : "Comic Sans MS" }}>
         <center>
             <Image src={Boof} alt="boof logo" /> <h1 style={{ display: "inline", fontSize: 64 }}>boofstream</h1>
         </center>
@@ -270,7 +270,13 @@ export default function CommentatorView(
                 <BigButton onClick={swapPlayers}>swap players</BigButton>
                 <BigButton onClick={resetScores}>reset scores</BigButton>
                 <BigButton onClick={resetMatch}>reset match</BigButton>
-                <BigButton onClick={() => setShowChangeSetModal(true)}>change set</BigButton>
+                <BigButton onClick={() => {
+                    setChangeSetLoading(true);
+                    loadSets(tournamentUrl).then(() => {
+                        setShowChangeSetModal(true);
+                        setChangeSetLoading(false);
+                    });
+                }}>{changeSetLoading ? "loading..." : "change set"}</BigButton>
                 <BigButton onClick={() => setShowSettingsModal(true)}>settings</BigButton>
                 {state.slippiConnected && state.slippi ?
                     <PortMatcher 
@@ -283,11 +289,11 @@ export default function CommentatorView(
 
                 {/* ---- BEGIN MODALS ---- */}
 
-                <Modal title="select set" isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
+                <Modal title="select set" adamMode={state.adamMode} isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
                     <SetSelector sets={sets} onSelect={loadSet} playerMap={playerMap} />
                 </Modal>
 
-                <Modal title="settings" isOpen={showSettingsModal} onClose={() => setShowSettingsModal(false)}>
+                <Modal title="settings" adamMode={state.adamMode} isOpen={showSettingsModal} onClose={() => setShowSettingsModal(false)}>
                     <div>
                         tournament url (make sure to include the /event/melee-singles part!):<br />
                     </div>
@@ -309,6 +315,12 @@ export default function CommentatorView(
                         type="checkbox"
                         checked={state.doObsSwitch}
                         onChange={e => onChangeAndSave({ ...state, doObsSwitch: e.target.checked })}
+                    /><br />
+                    use a less fun font:{" "}
+                    <input
+                        type="checkbox"
+                        checked={state.adamMode}
+                        onChange={e => onChangeAndSave({ ...state, adamMode: e.target.checked })}
                     />
                 </Modal>
             </div>
