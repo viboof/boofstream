@@ -30,10 +30,12 @@ jobs:
         working-directory: ./boofstream-manager
         run: npm run build
     # --- boofstream ---
-      - name: Mark boofstream as release artifact
-        run: sed -i.bak s/IS_RELEASE_ARTIFACT\s=\sfalse/IS_RELEASE_ARTIFACT\s=\strue/g boofstream/index.ts
+      - name: Remove isReleaseArtifact.ts
+        run: rm boofstream/isReleaseArtifact.ts
+      - name: Write isReleaseArtifact.ts
+        run: echo "export default true" > isReleaseArtifact.ts
       - name: Check marked as release artifact
-        run: cat boofstream/index.ts | grep IS_RELEASE_ARTIFACT
+        run: cat boofstream/isReleaseArtifact.ts
       - name: Install boofstream dependencies
         working-directory: ./boofstream
         run: npm i --save-dev

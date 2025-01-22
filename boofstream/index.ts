@@ -11,8 +11,7 @@ import { ConnectionEvent, ConnectionStatus, ConsoleConnection, PlayerType } from
 
 import fs from "fs";
 import { createServer } from "http";
-
-const IS_RELEASE_ARTIFACT = false;
+import isReleaseArtifact from "./isReleaseArtifact";
 
 const app = express();
 const server = createServer(app);
@@ -470,7 +469,7 @@ app.get("/die", async () => {
     throw new Error("die");
 })
 
-app.use("/", express.static(IS_RELEASE_ARTIFACT ? "dist/ui": "../boofstream-manager/out"));
+app.use("/", express.static(isReleaseArtifact ? "dist/ui": "../boofstream-manager/out"));
 
 app.listen(1337, () => console.log("live! open your browser to http://localhost:1337"));
 server.listen(1338);
