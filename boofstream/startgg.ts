@@ -5,8 +5,6 @@ import countriesToCodes from "./countriesToCodes";
 
 const COUNTRIES_TO_CODES = countriesToCodes as any;
 
-const SGG_TOKEN: String = JSON.parse(fs.readFileSync("config.json").toString("utf-8")).sggToken;
-
 // TODO: cannot support >500 entrants
 const INIT_GQL = `query($tournamentSlug: String, $eventSlug: String) {
   tournament(slug: $tournamentSlug) {
@@ -102,14 +100,14 @@ export function wrap(f: (req: Request, res: Response) => Promise<void>) {
     }
 }
 
-async function gqlfetch(query: string, variables: any) {
+async function gqlfetch(res: Response, query: string, variables: any) {
     const resp = (await fetch(
         "https://api.start.gg/gql/alpha",
         {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + SGG_TOKEN
+                Authorization: "Bearer " + res.locals.config.startgg.token
             },
             body: JSON.stringify({
                 query: query,
@@ -137,7 +135,7 @@ async function _init(req: Request, res: Response) {
     console.log(eventSlug);
     console.log(tournamentSlug);
 
-    const json = await gqlfetch(INIT_GQL, { eventSlug, tournamentSlug });
+    const json = await gqlfetch(res, INIT_GQL, { eventSlug, tournamentSlug });
 
     const tourney = json.tournament;
     const event = json.event;
@@ -195,7 +193,7 @@ async function _sets(req: Request, res: Response) {
     const url = req.query.url as string;
     const eventSlug = url.split(".gg/")[1];
 
-    const data = await gqlfetch(SETS_GQL, { eventSlug });
+    const data = await gqlfetch(res, SETS_GQL, { eventSlug });
 
     let sets: BoofSet[] = [];
 
@@ -241,7 +239,7 @@ async function _report(req: Request, res: Response) {
 
     console.log("report gql:", gql);
 
-    const resp = await gqlfetch(gql, { setId, winnerId: p1WinCount >= p2WinCount ? player1Id : player2Id });
+    const resp = await gqlfetch(res, gql, { setId, winnerId: p1WinCount >= p2WinCount ? player1Id : player2Id });
     console.log("REPORT RESP:", resp)
 
     res.json({ resp });

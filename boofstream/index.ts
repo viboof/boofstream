@@ -256,6 +256,11 @@ app.post("/config", (req, res) => {
     res.end();
 });
 
+app.use((_, res, next) => {
+    res.locals.config = config;
+    next();
+});
+
 app.get("/startgg/init", startgg.init);
 app.get("/startgg/sets", startgg.sets);
 app.post("/startgg/sets/report", startgg.report);
