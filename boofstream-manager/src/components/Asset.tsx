@@ -1,6 +1,6 @@
 "use client";
 
-import { getBackendHost } from "@/app/utils";
+import { getBackendHost } from "@/utils";
 import { CSSProperties } from "react";
 
 export default function Asset(props: { 

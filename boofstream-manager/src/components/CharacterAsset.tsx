@@ -1,7 +1,7 @@
 "use client";
 
 import { Character, CharacterColor } from "boofstream-common";
-import { getCharacterAssetName } from "@/app/utils";
+import { getCharacterAssetName } from "@/utils";
 import Asset from "./Asset";
 import { CSSProperties } from "react";
 

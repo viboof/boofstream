@@ -1,13 +1,11 @@
 "use client";
 
 import { BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
-import "./commentator.css";
-import "@/app/globals.css";
-import SimplePlayer from "./components/SimplePlayer";
+import SimplePlayer from "@/components/SimplePlayer";
 import Image from "next/image";
 import Boof from "@/assets/boof.gif";
 import { useEffect, useState } from "react";
-import { getBackendHost } from "@/app/utils";
+import { getBackendHost } from "@/utils";
 import BigButton from "@/components/BigButton";
 import PortMatcher from "@/components/PortMatcher";
 import SetSelector from "@/components/SetSelector";

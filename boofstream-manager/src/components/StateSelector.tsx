@@ -1,4 +1,4 @@
-import { getBackendHost } from "@/app/utils";
+import { getBackendHost } from "@/utils";
 import { useEffect, useState } from "react";
 import Asset from "./Asset";
 import BoofSelect from "./BoofSelect";
