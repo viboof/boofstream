@@ -16,7 +16,7 @@ pkg -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
 cd ../release
 cp ../boofstream/dist/boofstream"$3" dist/boofstream"$3"
 cp ../boofstream-updater/dist/boofstream"$3" boofstream"$3"
-echo "$2" > osarch.txt
+echo "$2" > dist/osarch.txt
 
 zip -r ../boofstream-"$VERSION"-"$2".zip *
 

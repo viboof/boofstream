@@ -62,8 +62,6 @@ jobs:
         run: mkdir release/out
       - name: Keep out dir
         run: touch release/out/.keep
-      - name: Copy updater shouldUpdateFile.js
-        run: cp boofstream-updater/shouldUpdateFile.js release/dist/shouldUpdateFile.js
       - name: Clone TournamentStreamHelper
         run: git clone https://github.com/joaorb64/TournamentStreamHelper
       - name: Copy TSH layouts into boofstream
@@ -71,7 +69,7 @@ jobs:
       - name: Copy TSH license into layouts
         run: cp TournamentStreamHelper/LICENSE release/layouts/LICENSE
       - name: Write version.txt
-        run: git describe --tags > release/version.txt
+        run: git describe --tags > release/dist/version.txt
     # --- artifacts ---
       - name: Install yao-pkg
         run: npm i -g @yao-pkg/pkg
