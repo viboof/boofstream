@@ -39,8 +39,9 @@ async function main() {
 
     console.log(`New release found: ${highestVersion}.`);
     console.log("Would you like to update now?");
-    console.log("This process will take a few minutes and need up to 750MB of storage.");
+    console.log("This process will take a few minutes and may need up to 750MB of storage.");
     console.log("Your existing data will be preserved. Layouts are not updated.");
+    console.log("This will delete your old backup folder (and create a new one).");
 
     const shouldUpdate = await yesno({ question: "Do you wish to update now?" });
 
@@ -63,6 +64,10 @@ async function updateBoofstream(release: any) {
     console.log("The workdir is", workdir, "if something goes wrong, you can delete this.");
     console.log("Backing everything up to the 'backup' directory.");
     console.log("If something goes wrong, your old setup will still be there.");
+
+    if (fs.existsSync("backup")) {
+        fs.rmSync("backup");
+    }
 
     fs.cpSync("*", "backup");
 
