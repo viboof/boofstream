@@ -76,17 +76,17 @@ jobs:
       - name: Install yao-pkg
         run: npm i -g @yao-pkg/pkg
       - name: Make release artifact (Windows x64)
-        run: sh scripts/make-release-artifact.sh win-x64 windows-x64 .exe
+        run: sh scripts/make-release-artifacts.sh win-x64 windows-x64 .exe
       - name: Make release artifact (Windows arm64)
-        run: sh scripts/make-release-artifact.sh win-arm64 windows-arm64 .exe
+        run: sh scripts/make-release-artifacts.sh win-arm64 windows-arm64 .exe
       - name: Make release artifact (Linux x64)
-        run: sh scripts/make-release-artifact.sh linux-x64 linux-x64
+        run: sh scripts/make-release-artifacts.sh linux-x64 linux-x64
       - name: Make release artifact (Linux arm64)
-        run: sh scripts/make-release-artifact.sh linux-arm64 linux-arm64
+        run: sh scripts/make-release-artifacts.sh linux-arm64 linux-arm64
       - name: Make release artifact (MacOS x64)
-        run: sh scripts/make-release-artifact.sh macos-x64 macos-x64
+        run: sh scripts/make-release-artifacts.sh macos-x64 macos-x64
       - name: Make release artifact (MacOS arm64)
-        run: sh scripts/make-release-artifact.sh macos-arm64 macos-arm64
+        run: sh scripts/make-release-artifacts.sh macos-arm64 macos-arm64
     # --- release ---
       - name: Publish release
         uses: ncipollo/release-action@v1

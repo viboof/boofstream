@@ -5,9 +5,11 @@
 NODE_TARGET=node20
 VERSION=$(git describe --tags)
 
+echo Packaging boofstream
 cd boofstream
 pkg -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
 
+echo Packaging boofstream-updater
 cd ../boofstream-updater
 pkg -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
 
