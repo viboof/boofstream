@@ -22,6 +22,6 @@ zip -r ../boofstream-"$VERSION"-"$2".zip *
 
 rm dist/boofstream"$3"
 rm boofstream"$3"
-rm osarch.txt
+rm dist/osarch.txt
 
 cd ..
