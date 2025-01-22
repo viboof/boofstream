@@ -53,6 +53,10 @@ jobs:
         run: mkdir release/dist
       - name: Copy UI
         run: cp -r boofstream-manager/out release/dist/ui
+      - name: Make out dir
+        run: mkdir release/out
+      - name: Keep out dir
+        run: touch release/out/.keep
       - name: Clone TournamentStreamHelper
         run: git clone https://github.com/joaorb64/TournamentStreamHelper
       - name: Copy TSH layouts into boofstream
