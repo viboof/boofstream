@@ -1,6 +1,6 @@
 "use client";
 
-import { BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
+import { BoofConfig, BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
 import SimplePlayer from "./SimplePlayer";
 import Image from "next/image";
 import Boof from "@/assets/boof.gif";
@@ -12,6 +12,7 @@ import SetSelector from "./SetSelector";
 import TournamentInfo from "./TournamentInfo";
 import Modal from "./Modal";
 import Hr from "./Hr";
+import ConfigModal from "./config/ConfigModal";
 
 const DEFAULT_PLAYER: Player = {
     score: 0,
@@ -26,8 +27,15 @@ const DEFAULT_PLAYER: Player = {
 };
 
 export default function CommentatorView(
-    { state, onChange, onSave }: 
-    { state: BoofState, onChange: (state: BoofState) => void, onSave: (state: BoofState) => void },
+    { state, config, onChange, onSave, onConfigChange, onConfigSave }: 
+    { 
+        state: BoofState,
+        config: BoofConfig,
+        onChange: (state: BoofState) => void, 
+        onSave: (state: BoofState) => void,
+        onConfigChange: (config: BoofConfig) => void,
+        onConfigSave: (config: BoofConfig) => void,
+    },
 ) {
     const [sggPlayers, setSggPlayers] = useState([] as StartggPlayer[]);
     const [sets, setSets] = useState([] as BoofSet[]);
@@ -38,8 +46,8 @@ export default function CommentatorView(
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [changeSetLoading, setChangeSetLoading] = useState(false);
 
-    const slippiPort = state.slippiPort;
-    const tournamentUrl = state.tournamentUrl;
+    const slippiPort = config.slippi.port;
+    const tournamentUrl = config.startgg.tournamentUrl;
 
     async function loadPlayers(tourneyUrl: string | undefined = tournamentUrl) {
         if (!tourneyUrl) return;
@@ -62,6 +70,12 @@ export default function CommentatorView(
     }
 
     async function loadSets(url: string) {
+        const parts = url.split("start.gg/")[1].split("/");
+
+        // 0          1                            2     3             4
+        // tournament/don-t-park-on-the-grass-2024/event/melee-singles/brackets
+        url = "https://start.gg/" + parts.slice(0, 4).join("/");
+
         const res = await fetch(getBackendHost() + "startgg/sets?url=" + encodeURIComponent(url));
         const json = await res.json();
         if (json.error) {
@@ -221,7 +235,7 @@ export default function CommentatorView(
         return null;
     }
 
-    return <div style={{ margin: "32px", fontFamily: state.adamMode ? "sans-serif" : "Comic Sans MS" }}>
+    return <div style={{ margin: "32px", fontFamily: "sans-serif" }}>
         <center>
             <Image src={Boof} alt="boof logo" /> <h1 style={{ display: "inline", fontSize: 64 }}>boofstream</h1>
         </center>
@@ -288,7 +302,7 @@ export default function CommentatorView(
 
                 {/* ---- BEGIN MODALS ---- */}
 
-                <Modal title="select set" adamMode={state.adamMode} isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
+                <Modal title="select set" isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
                     <SetSelector 
                         sets={sets} 
                         onSelect={loadSet} 
@@ -298,36 +312,19 @@ export default function CommentatorView(
                     />
                 </Modal>
 
-                <Modal title="settings" adamMode={state.adamMode} isOpen={showSettingsModal} onClose={() => setShowSettingsModal(false)}>
-                    <div>
-                        tournament url (make sure to include the /event/melee-singles part!):<br />
-                    </div>
-                    <input
-                        style={{ display: "block", width: "100%" }}
-                        value={tournamentUrl}
-                        onChange={e => onChangeAndSave({ ...state, tournamentUrl: e.target.value })}
-                    />
-                    <button onClick={() => loadTournament()}>load tournament</button><br />
-                    {sggPlayers.length} players loaded!<br />
-                    <Hr />
-                    slippi port: <input 
-                        type="number" 
-                        value={slippiPort} 
-                        onChange={e => onChangeAndSave({ ...state, slippiPort: e.target.valueAsNumber})}
-                    /><br />
-                    automatically switch OBS scenes:{" "}
-                    <input 
-                        type="checkbox"
-                        checked={state.doObsSwitch}
-                        onChange={e => onChangeAndSave({ ...state, doObsSwitch: e.target.checked })}
-                    /><br />
-                    use a less fun font:{" "}
-                    <input
-                        type="checkbox"
-                        checked={state.adamMode}
-                        onChange={e => onChangeAndSave({ ...state, adamMode: e.target.checked })}
-                    />
-                </Modal>
+                <ConfigModal 
+                    show={showSettingsModal} 
+                    value={config}
+                    obsConnected={state.obsConnected}
+                    // admins have negative entrant IDs
+                    startggPlayerCount={sggPlayers.filter(p => p.entrantId >= 0).length}
+                    onClose={() => setShowSettingsModal(false)}
+                    onChange={onConfigChange}
+                    onSave={onConfigSave}
+                    onOBSConnect={() => fetch(getBackendHost() + "obs/connect", { method: "post" })}
+                    onOBSDisconnect={() => fetch(getBackendHost() + "obs/disconnect", { method: "post" } )}
+                    onStartggLoad={() => loadTournament()}
+                />
             </div>
         </div>
         <div className="column">

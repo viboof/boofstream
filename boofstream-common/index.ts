@@ -1,19 +1,48 @@
 type BoofState = {
+    // --- game state ---
     tournament: Tournament,
     player1: Player,
     player2: Player,
     commentators: Commentator[],
-    tournamentUrl: string,
     activeSet?: BoofSet,
     lastPlayer1Score: number,
     lastPlayer2Score: number,
+    started: boolean,
+    // --- slippi ---
     slippi?: Slippi,
     slippiConnected: boolean,
-    doObsSwitch: boolean,
-    started: boolean,
-    slippiPort: number,
-    adamMode: boolean,
+    obsConnected: boolean,
 }
+
+type BoofConfig = {
+    slippi: SlippiConfig,
+    obs: OBSConfig,
+    startgg: StartGGConfig,
+    customization: CustomizationConfig,
+};
+
+type SlippiConfig = {
+    port: number,
+};
+
+type OBSConfig = {
+    doSwitch: boolean,
+    host: string,
+    password: string,
+    noGameScene: string,
+    gameScene: string,
+};
+
+type StartGGConfig = {
+    token: string,
+    tournamentUrl: string,
+};
+
+type CustomizationConfig = {
+    appendLToLosers: boolean,
+    player1Color: string,
+    player2Color: string,
+};
 
 type Slippi = {
     port1: number,
@@ -160,5 +189,18 @@ const CHARACTER_COLORS = {
     [Character.GANONDORF]: [CharacterColor.RED, CharacterColor.BLUE, CharacterColor.GREEN, CharacterColor.PURPLE],
 }
 
-export type { BoofState, Player, Tournament, Commentator, StartggPlayer, BoofSet, Slippi };
+export type { 
+    BoofConfig, 
+    SlippiConfig, 
+    StartGGConfig,
+    OBSConfig, 
+    CustomizationConfig, 
+    BoofState, 
+    Player, 
+    Tournament, 
+    Commentator, 
+    StartggPlayer, 
+    BoofSet, 
+    Slippi 
+};
 export { Character, CharacterColor, CHARACTER_COLORS };

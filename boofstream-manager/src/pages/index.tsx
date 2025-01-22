@@ -1,4 +1,4 @@
-import { BoofState } from "boofstream-common";
+import { BoofConfig, BoofState } from "boofstream-common";
 import { getBackendHost, getSocketHost } from "@/utils";
 import { useEffect, useState } from "react";
 import CommentatorView from "../components/CommentatorView";
@@ -8,11 +8,17 @@ const clientId = Math.random();
 
 export default function CommentatorPage() {
     const [state, setState] = useState(undefined as BoofState | undefined);
+    const [config, setConfig] = useState(undefined as BoofConfig | undefined);
 
     useEffect(() => {
         fetch(getBackendHost() + "state?_=" + Math.random())
             .then(res => res.json())
             .then(setState)
+            .catch(() => location.reload());
+
+        fetch(getBackendHost() + "config?_=" + Math.random())
+            .then(res => res.json())
+            .then(setConfig)
             .catch(() => location.reload());
     }, []);
 
@@ -26,7 +32,17 @@ export default function CommentatorPage() {
         ).then();
     }
 
-    if (!state) {
+    function saveConfig(config: BoofConfig) {
+        fetch(
+            getBackendHost() + "config?clientId=" + clientId, {
+                method: "post",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(config)
+            }
+        ).then();
+    }
+
+    if (!state || !config) {
         return null;
     }
 
@@ -48,5 +64,24 @@ export default function CommentatorPage() {
             .catch(() => location.reload());
     });
 
-    return <CommentatorView state={state} onChange={setState} onSave={save} />
+    socket.on("update_config", (cid) => {
+        console.log("update config", cid, clientId);
+        if (cid === clientId.toString()) {
+            console.log("ignoring - it us");
+            return;
+        }
+        fetch(getBackendHost() + "config?_=" + Math.random())
+            .then(res => res.json())
+            .then(setConfig)
+            .catch(() => location.reload());
+    });
+
+    return <CommentatorView 
+        state={state} 
+        config={config}
+        onChange={setState}
+        onSave={save} 
+        onConfigChange={setConfig}
+        onConfigSave={saveConfig}
+    />
 }

@@ -9,6 +9,10 @@ body {
   overflow-x: hidden;
 }
 
+input {
+  margin-top: 4px;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

@@ -1,6 +1,6 @@
 import * as startgg from "./startgg";
 
-import { BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Player } from "boofstream-common";
+import { BoofConfig, BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Player } from "boofstream-common";
 
 import cors from "cors";
 import express from "express";
@@ -17,15 +17,8 @@ const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 let livestream: SlpLiveStream | null = null;
 const realtime = new SlpRealTime();
-let started = false;
 const obs = new OBSWebSocket();
-
-const configFile = fs.readFileSync("config.json");
-const config = JSON.parse(configFile.toString("utf-8"));
-
-if (config.obsPassword) {
-    obs.connect("ws://127.0.0.1:4455", config.obsPassword);
-}
+let startup = true;
 
 function scene(sceneName: string) {
     obs.call("SetCurrentProgramScene", { sceneName });
@@ -53,14 +46,36 @@ let state: BoofState = {
     player1: DEFAULT_PLAYER,
     player2: DEFAULT_PLAYER,
     commentators: [],
-    tournamentUrl: "",
     lastPlayer1Score: 0,
     lastPlayer2Score: 0,
     slippiConnected: false,
-    doObsSwitch: false,
     started: false,
-    slippiPort: 53742,
-    adamMode: false,
+    obsConnected: false,
+};
+
+const DEFAULT_P1_COLOR = "#00a800";
+const DEFAULT_P2_COLOR = "#0f7477";
+
+let config: BoofConfig = {
+    slippi: {
+        port: 53742
+    },
+    obs: {
+        doSwitch: false,
+        host: "127.0.0.1:4455",
+        password: "",
+        noGameScene: "Crowd Cam",
+        gameScene: "Melee",
+    },
+    startgg: {
+        token: "",
+        tournamentUrl: "",
+    },
+    customization: {
+        appendLToLosers: false,
+        player1Color: DEFAULT_P1_COLOR,
+        player2Color: DEFAULT_P2_COLOR,
+    },
 };
 
 if (fs.existsSync("out/state.json")) {
@@ -72,8 +87,14 @@ if (fs.existsSync("out/state.json")) {
     }
 }
 
-const P1_COLOR = "#00a800";
-const P2_COLOR = "#0f7477";
+if (fs.existsSync("out/config.json")) {
+    try {
+        config = JSON.parse(fs.readFileSync("out/config.json").toString("utf-8"));
+    } catch {
+        console.log("config corrupted ... deleting :(");
+        fs.rmSync("out/config.json");
+    }
+}
 
 function convertCountry(country: string) {
     if (!country) return {};
@@ -130,7 +151,7 @@ function convertPlayer(player: Player, color: string) {
         score: player.score,
         player: {
             "1": {
-                name: player.name + (player.losers && config.appendLToLosers ? " [L]" : ""),
+                name: player.name + (player.losers && config.customization.appendLToLosers ? " [L]" : ""),
                 team: player.sponsor,
                 pronoun: player.pronouns,
                 twitter: player.twitter,
@@ -165,8 +186,10 @@ app.get("/countries/:country/states", (req, res) => {
 });
 
 app.get("/state", (_, res) => {
-    if (!livestream) {
-        state.slippiConnected = false;
+    if (!livestream) state.slippiConnected = false;
+    if (startup) {
+        state.obsConnected = false;
+        startup = false;
     }
 
     res.json(state);
@@ -183,8 +206,8 @@ function writeState() {
         score: {
             "1": {
                 team: {
-                    "1": convertPlayer(state.player1, P1_COLOR),
-                    "2": convertPlayer(state.player2, P2_COLOR),
+                    "1": convertPlayer(state.player1, config.customization.player1Color),
+                    "2": convertPlayer(state.player2, config.customization.player2Color),
                 },
                 phase: state.tournament.phase || "",
                 match: state.tournament.match || "",
@@ -205,6 +228,28 @@ app.post("/state", (req, res) => {
 
     setTimeout(() => io.emit("update_state", req.query.clientId), 100);
 
+    res.status(201);
+    res.end();
+});
+
+app.get("/config", (_, res) => {
+    res.json(config);
+});
+
+app.post("/config", (req, res) => {
+    const oldConfig = config;
+    config = req.body;
+    setTimeout(() => {
+        io.emit("update_config", req.query.clientId);
+
+        // apply UI changes
+        if (
+            config.customization.appendLToLosers !== oldConfig.customization.appendLToLosers ||
+            config.customization.player1Color !== oldConfig.customization.player1Color ||
+            config.customization.player2Color !== oldConfig.customization.player2Color
+        ) writeState();
+    }, 100);
+    fs.writeFileSync("out/config.json", JSON.stringify(config));
     res.status(201);
     res.end();
 });
@@ -292,8 +337,8 @@ app.post("/slippi/livestream", async (req, res) => {
                 : slippi.characterColor1;
         }
 
-        if (state.doObsSwitch) {
-            scene(config.obsStartedMainScene);
+        if (state.obsConnected && config.obs.doSwitch) {
+            scene(config.obs.gameScene);
         }
 
         writeState();
@@ -304,8 +349,8 @@ app.post("/slippi/livestream", async (req, res) => {
 
     livestream.gameEnd$.subscribe(e => {
         const { slippi } = state;
-        if (state.doObsSwitch) {
-            scene(config.obsNoGameScene);
+        if (state.obsConnected && config.obs.doSwitch) {
+            scene(config.obs.noGameScene);
         }
 
         console.log("started:", state.started, "!slippi:", !slippi, "p1IsP1:", slippi?.player1IsPort1)
@@ -384,13 +429,34 @@ app.post("/slippi/disconnect", async (_, res) => {
     res.send("ok");
     res.status(200);
     res.end();
-})
-
-app.post("/start", () => { 
-    started = true; 
 });
-app.post("/end", () => { 
-    started = false;
+
+app.post("/obs/connect", (_, res) => {
+    obs.connect(`ws://${config.obs.host}`, config.obs.password)
+        .catch(() => {
+            state.obsConnected = false;
+            writeState();
+            io.emit("update_state", "system");
+        });
+
+    state.obsConnected = true;
+    writeState();
+    io.emit("update_state", "system");
+
+    res.send("ok");
+    res.status(200);
+    res.end();
+});
+
+app.post("/obs/disconnect", (_, res) => {
+    obs.disconnect();
+    state.obsConnected = false;
+    writeState();
+    io.emit("update_state", "system");
+
+    res.send("ok");
+    res.status(200);
+    res.end();
 });
 
 app.get("/die", async () => {
