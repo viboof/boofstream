@@ -53,7 +53,7 @@ jobs:
       - name: Package boofstream (MacOS x64)
         working-directory: ./boofstream
         run: pkg -t latest-macos-x64 dist/index.js -o dist/boofstream-macos-x64
-      - name: Package boofstream (Linux ARM)
+      - name: Package boofstream (MacOS ARM)
         working-directory: ./boofstream
         run: pkg -t latest-macos-arm64 dist/index.js -o dist/boofstream-macos-arm64
     # --- release dir ---
@@ -115,9 +115,6 @@ jobs:
       - name: Delete release artifact (MacOS arm64)
         run: rm release/boofstream
     # --- release ---
-      - name: Get version
-        run: echo "::set-output name=version::$(cat version.txt)-$(git rev-parse --short=8 HEAD)"
-        id: version
       - name: Publish release
         uses: ncipollo/release-action@v1
         with:
