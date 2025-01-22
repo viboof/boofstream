@@ -1,6 +1,6 @@
 "use client";
 
-import { BoofSet, BoofState, Player, Slippi, StartggPlayer } from "@/app/types/boof";
+import { BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
 import "./commentator.css";
 import "@/app/globals.css";
 import SimplePlayer from "./components/SimplePlayer";

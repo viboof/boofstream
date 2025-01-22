@@ -1,4 +1,4 @@
-import { BoofSet, StartggPlayer } from "@/app/types/boof";
+import { BoofSet, StartggPlayer } from "boofstream-common";
 import SetInfo from "./SetInfo";
 
 export default function SetSelector(props: { 

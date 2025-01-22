@@ -1,6 +1,6 @@
 import * as startgg from "./startgg";
 
-import { BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Player } from "../boofstream-common/boof";
+import { BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Player } from "boofstream-common";
 
 import cors from "cors";
 import express from "express";

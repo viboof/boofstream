@@ -1,4 +1,4 @@
-import { Character, CharacterColor, Player, Slippi } from "@/app/types/boof";
+import { Character, CharacterColor, Player, Slippi } from "boofstream-common";
 import CharacterAsset from "./CharacterAsset";
 
 export default function PortMatcher(props: {

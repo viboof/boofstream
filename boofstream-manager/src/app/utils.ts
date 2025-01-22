@@ -1,4 +1,4 @@
-import { Character, CHARACTER_COLORS, CharacterColor } from "./types/boof";
+import { Character, CHARACTER_COLORS, CharacterColor } from "boofstream-common";
 
 export function getBackendHost() {
     return "http://" + location.hostname + ":1337/";

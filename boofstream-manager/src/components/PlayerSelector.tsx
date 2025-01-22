@@ -1,4 +1,4 @@
-import { Player, StartggPlayer } from "@/app/types/boof";
+import { Player, StartggPlayer } from "boofstream-common";
 import BigInput from "./BigInput";
 import { KeyboardEvent } from "react";
 

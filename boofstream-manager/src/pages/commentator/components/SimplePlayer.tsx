@@ -1,4 +1,4 @@
-import { CharacterColor, Player, StartggPlayer } from "@/app/types/boof";
+import { CharacterColor, Player, StartggPlayer } from "boofstream-common";
 import BigInput from "@/components/BigInput";
 import CharacterColorSelector from "@/components/CharacterColorSelector";
 import CharacterSelector from "@/components/CharacterSelector";

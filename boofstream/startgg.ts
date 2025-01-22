@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import fs from "fs";
-import { BoofSet, StartggPlayer } from "../boofstream-common/boof";
+import { BoofSet, StartggPlayer } from "boofstream-common";
 
 const SGG_TOKEN: String = JSON.parse(fs.readFileSync("config.json").toString("utf-8")).sggToken;
 const COUNTRIES_TO_CODES = JSON.parse(fs.readFileSync("countriesToCodes.json").toString("utf-8"));

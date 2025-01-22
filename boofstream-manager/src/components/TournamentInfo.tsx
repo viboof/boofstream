@@ -1,4 +1,4 @@
-import { Tournament } from "@/app/types/boof";
+import { Tournament } from "boofstream-common";
 import { KeyboardEvent } from "react";
 
 

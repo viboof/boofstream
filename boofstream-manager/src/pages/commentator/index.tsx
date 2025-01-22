@@ -1,4 +1,4 @@
-import { BoofState } from "@/app/types/boof";
+import { BoofState } from "boofstream-common";
 import { getBackendHost, getSocketHost } from "@/app/utils";
 import { useEffect, useState } from "react";
 import CommentatorView from "./CommentatorView";

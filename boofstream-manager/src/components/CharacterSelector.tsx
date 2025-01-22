@@ -1,6 +1,6 @@
 "use client";
 
-import { Character, CharacterColor } from "@/app/types/boof";
+import { Character, CharacterColor } from "boofstream-common";
 import BoofSelect, { ValueObj } from "./BoofSelect";
 import CharacterAsset from "./CharacterAsset";
 
