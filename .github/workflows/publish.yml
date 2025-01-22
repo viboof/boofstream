@@ -33,7 +33,7 @@ jobs:
       - name: Remove isReleaseArtifact.ts
         run: rm boofstream/isReleaseArtifact.ts
       - name: Write isReleaseArtifact.ts
-        run: echo "export default true" > isReleaseArtifact.ts
+        run: echo "export default true" > boofstream/isReleaseArtifact.ts
       - name: Check marked as release artifact
         run: cat boofstream/isReleaseArtifact.ts
       - name: Install boofstream dependencies
