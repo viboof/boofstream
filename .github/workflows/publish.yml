@@ -43,7 +43,7 @@ jobs:
         # --- windows ---
       - name: Package boofstream (Windows x64)
         working-directory: ./boofstream
-        run: pkg -t latest-win-x64 dist/index.js -o dist/boofstream-win-x64.exe
+        run: pkg -t node20-win-x64 dist/index.js -o dist/boofstream-win-x64.exe
       # - name: Package boofstream (Windows ARM)
       #   working-directory: ./boofstream
       #   run: pkg -t latest-win-arm64 dist/index.js -o dist/boofstream-win-arm64.exe
