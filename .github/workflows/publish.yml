@@ -31,7 +31,7 @@ jobs:
         run: npm run build
     # --- boofstream ---
       - name: Mark boofstream as release artifact
-        run: sed -i.bak s/IS_RELEASE_ARTIFACT = false/IS_RELEASE_ARTIFACT = true/g boofstream/index.ts
+        run: sed -i.bak s/IS_RELEASE_ARTIFACT\s=\sfalse/IS_RELEASE_ARTIFACT\s=\strue/g boofstream/index.ts
       - name: Check marked as release artifact
         run: cat boofstream/index.ts | grep IS_RELEASE_ARTIFACT
       - name: Install boofstream dependencies
