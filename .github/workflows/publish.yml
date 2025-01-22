@@ -70,12 +70,12 @@ jobs:
         run: mkdir release/dist
       - name: Copy UI
         run: cp -r boofstream-manager/out release/dist/ui
-      - name: Clone TournamentStreamHelper
-        run: git clone https://github.com/joaorb64/TournamentStreamHelper
-      - name: Copy TSH layouts into boofstream
-        run: cp -r TournamentStreamHelper/layout boofstream/layouts
-      - name: Copy TSH license into layouts
-        run: cp TournamentStreamHelper/LICENSE boofstream/layouts/LICENSE
+      # - name: Clone TournamentStreamHelper
+      #   run: git clone https://github.com/joaorb64/TournamentStreamHelper
+      # - name: Copy TSH layouts into boofstream
+      #   run: cp -r TournamentStreamHelper/layout boofstream/layouts
+      # - name: Copy TSH license into layouts
+      #   run: cp TournamentStreamHelper/LICENSE boofstream/layouts/LICENSE
     # --- zip files ---
       # --- windows x64 ---
       - name: Copy release artifact (Windows x64)
