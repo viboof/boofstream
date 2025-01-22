@@ -3,3 +3,4 @@ node_modules
 boofstream/out/*.json
 boofstream/config.json
 boofstream-common/dist
+boofstream/dist
