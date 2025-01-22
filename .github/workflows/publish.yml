@@ -31,7 +31,9 @@ jobs:
         run: npm run build
     # --- boofstream ---
       - name: Mark boofstream as release artifact
-        run: sed -i.bak s/IS_RELEASE_ARTIFACT=false/IS_RELEASE_ARTIFACT=true/g boofstream/index.ts
+        run: sed -i.bak s/IS_RELEASE_ARTIFACT = false/IS_RELEASE_ARTIFACT = true/g boofstream/index.ts
+      - name: Check marked as release artifact
+        run: cat boofstream/index.ts | grep IS_RELEASE_ARTIFACT
       - name: Install boofstream dependencies
         working-directory: ./boofstream
         run: npm i --save-dev
@@ -40,27 +42,6 @@ jobs:
         run: npx tsc
       - name: Install yao-pkg
         run: npm i -g @yao-pkg/pkg
-        # --- windows ---
-      - name: Package boofstream (Windows x64)
-        working-directory: ./boofstream
-        run: pkg -t node20-win-x64 dist/index.js -o dist/boofstream-win-x64.exe
-      # - name: Package boofstream (Windows ARM)
-      #   working-directory: ./boofstream
-      #   run: pkg -t latest-win-arm64 dist/index.js -o dist/boofstream-win-arm64.exe
-      #   # --- linux ---
-      # - name: Package boofstream (Linux x64)
-      #   working-directory: ./boofstream
-      #   run: pkg -t latest-linux-x64 dist/index.js -o dist/boofstream-linux-x64
-      # - name: Package boofstream (Linux ARM)
-      #   working-directory: ./boofstream
-      #   run: pkg -t latest-linux-arm64 dist/index.js -o dist/boofstream-linux-arm64
-      #   # --- mac ---
-      # - name: Package boofstream (MacOS x64)
-      #   working-directory: ./boofstream
-      #   run: pkg -t latest-macos-x64 dist/index.js -o dist/boofstream-macos-x64
-      # - name: Package boofstream (MacOS ARM)
-      #   working-directory: ./boofstream
-      #   run: pkg -t latest-macos-arm64 dist/index.js -o dist/boofstream-macos-arm64
     # --- release dir ---
       - name: Make release dir
         run: mkdir release
@@ -76,49 +57,9 @@ jobs:
       #   run: cp -r TournamentStreamHelper/layout boofstream/layouts
       # - name: Copy TSH license into layouts
       #   run: cp TournamentStreamHelper/LICENSE boofstream/layouts/LICENSE
-    # --- zip files ---
-      # --- windows x64 ---
-      - name: Copy release artifact (Windows x64)
-        run: cp boofstream/dist/boofstream-win-x64.exe release/boofstream.exe
-      - name: Create release zip (Windows x64)
-        run: zip -r boofstream-windows-x64.zip release/*
-      - name: Delete release artifact (Windows x64)
-        run: rm release/boofstream.exe
-      # # --- windows arm64 ---
-      # - name: Copy release artifact (Windows arm64)
-      #   run: cp boofstream/dist/boofstream-win-arm64.exe release/boofstream.exe
-      # - name: Create release zip (Windows arm64)
-      #   run: zip -r boofstream-windows-arm64.zip release/*
-      # - name: Delete release artifact (Windows arm64)
-      #   run: rm release/boofstream.exe
-      # # --- linux x64 ---
-      # - name: Copy release artifact (Linux x64)
-      #   run: cp boofstream/dist/boofstream-linux-x64 release/boofstream
-      # - name: Create release zip (Linux x64)
-      #   run: zip -r boofstream-linux-x64.zip release/*
-      # - name: Delete release artifact (Linux x64)
-      #   run: rm release/boofstream
-      # # --- linux arm64 ---
-      # - name: Copy release artifact (Linux arm64)
-      #   run: cp boofstream/dist/boofstream-linux-arm64 release/boofstream
-      # - name: Create release zip (Linux arm64)
-      #   run: zip -r boofstream-linux-arm64.zip release/*
-      # - name: Delete release artifact (Linux arm64)
-      #   run: rm release/boofstream
-      # # --- macos x64 ---
-      # - name: Copy release artifact (MacOS x64)
-      #   run: cp boofstream/dist/boofstream-macos-x64 release/boofstream
-      # - name: Create release zip (MacOS x64)
-      #   run: zip -r boofstream-macos-x64.zip release/*
-      # - name: Delete release artifact (MacOS x64)
-      #   run: rm release/boofstream
-      # # --- linux arm64 ---
-      # - name: Copy release artifact (MacOS arm64)
-      #   run: cp boofstream/dist/boofstream-macos-arm64 release/boofstream
-      # - name: Create release zip (MacOS arm64)
-      #   run: zip -r boofstream-macos-arm64.zip release/*
-      # - name: Delete release artifact (MacOS arm64)
-      #   run: rm release/boofstream
+    # --- artifacts ---
+      - name: Make release artifact (Windows x64)
+        run: sh scripts/make-release-artifact.sh win-x64 windows-x64 .exe
     # --- release ---
       - name: Publish release
         uses: ncipollo/release-action@v1
