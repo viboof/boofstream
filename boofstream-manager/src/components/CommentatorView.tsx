@@ -1,17 +1,17 @@
 "use client";
 
 import { BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
-import SimplePlayer from "@/components/SimplePlayer";
+import SimplePlayer from "./SimplePlayer";
 import Image from "next/image";
 import Boof from "@/assets/boof.gif";
 import { useEffect, useState } from "react";
 import { getBackendHost } from "@/utils";
-import BigButton from "@/components/BigButton";
-import PortMatcher from "@/components/PortMatcher";
-import SetSelector from "@/components/SetSelector";
-import TournamentInfo from "@/components/TournamentInfo";
-import Modal from "@/components/Modal";
-import Hr from "@/components/Hr";
+import BigButton from "./BigButton";
+import PortMatcher from "./PortMatcher";
+import SetSelector from "./SetSelector";
+import TournamentInfo from "./TournamentInfo";
+import Modal from "./Modal";
+import Hr from "./Hr";
 
 const DEFAULT_PLAYER: Player = {
     score: 0,

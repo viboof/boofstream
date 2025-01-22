@@ -1,7 +1,7 @@
 import { BoofState } from "boofstream-common";
 import { getBackendHost, getSocketHost } from "@/utils";
 import { useEffect, useState } from "react";
-import CommentatorView from "./CommentatorView";
+import CommentatorView from "../components/CommentatorView";
 import { io } from "socket.io-client";
 
 const clientId = Math.random();

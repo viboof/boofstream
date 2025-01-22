@@ -397,5 +397,7 @@ app.get("/die", async () => {
     throw new Error("die");
 })
 
+app.use("/", express.static("../boofstream-manager/out"));
+
 app.listen(1337, () => console.log("live!"));
 server.listen(1338);
