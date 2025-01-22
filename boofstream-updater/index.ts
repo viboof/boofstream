@@ -10,6 +10,11 @@ const version = semver.clean(fs.readFileSync("dist/version.txt").toString("utf-8
 const osarch = fs.readFileSync("dist/osarch.txt").toString("utf-8").trim();
 
 async function main() {
+    if (fs.existsSync("dist/old_updater")) {
+        console.log("Cleaning up old updater at dist/old_updater");
+        fs.rmSync("dist/old_updater");
+    }
+
     console.log(`Checking for updates... (Currently ${version} on ${osarch})`);
 
     let releases;
@@ -35,10 +40,10 @@ async function main() {
             highestRelease = release;
             highestVersion = releaseVersion;
             highestDate = new Date(release.published_at);
-        } else if (semver.eq(releaseVersion, highestVersion) && highestDate) {
+        } else if (semver.eq(releaseVersion, highestVersion)) {
             const date = new Date(release.published_at);
 
-            if (date.getTime() > highestDate.getTime()) {
+            if (!highestDate || date.getTime() > highestDate.getTime()) {
                 highestRelease = release;
                 highestVersion = releaseVersion;
                 highestDate = date;
@@ -69,9 +74,14 @@ async function main() {
     updateBoofstream(highestRelease);
 }
 
-function shouldUpdateFile(path: string) {
+function getUpdaterFileName() {
     let updaterFileName = "boofstream";
     if (osarch.startsWith("win")) updaterFileName += ".exe";
+    return updaterFileName;
+}
+
+function shouldUpdateFile(path: string) {
+    let updaterFileName = getUpdaterFileName();
 
     if (
         path.startsWith("layouts") || 
@@ -136,6 +146,23 @@ function deleteDirectory(sep: string, path: string) {
     fs.rmdirSync(path);
 }
 
+function ensureDirsCreated(filepath: string) {
+    const dirs = filepath.split("/");
+    dirs.pop();  // remove file
+
+    let path = "";
+
+    for (const dir of dirs) {
+        if (dir !== dirs[0]) path += "/";
+        path += dir;
+
+        if (!fs.existsSync(path)) {
+            console.log("Creating directory", path);
+            fs.mkdirSync(path);
+        }
+    }
+}
+
 async function updateBoofstream(release: any) {
     const sep = osarch.startsWith("win") ? "\\" : "/";
     const workdir = os.tmpdir() + sep + "boofstream-" + new Date().getTime();
@@ -159,18 +186,25 @@ async function updateBoofstream(release: any) {
 
     const paths: string[] = [];
 
-    for (const file of directory.files) {
-        if (shouldUpdateFile(file.path)) {
-            const write = () => new Promise((resolve, reject) => {
-                file.stream()
-                    .pipe(fs.createWriteStream(file.path))
-                    .on("error", reject)
-                    .on("finish", resolve);
-            })
+    for(const file of directory.files) {
+        const write = (path: string) => new Promise((resolve, reject) => {
+            ensureDirsCreated(path);
+            
+            file.stream()
+                .pipe(fs.createWriteStream(path))
+                .on("error", reject)
+                .on("finish", resolve);
+        })
 
+        if (shouldUpdateFile(file.path)) {
             console.log("Writing " + file.path + "...");
             paths.push(file.path);
-            await write();
+            await write(file.path);
+        } else if (file.path === getUpdaterFileName()) {
+            console.log("Moving old version of updater to dist/old_updater");
+            fs.renameSync(getUpdaterFileName(), "dist/old_updater");
+            console.log("Writing new version of updater to", getUpdaterFileName());
+            await write(getUpdaterFileName());
         }
     }
 
@@ -207,7 +241,11 @@ async function deleteOldFiles(sep: string, newFiles: string[], path = ".") {
             // is 2:30am
             if (unixpath.startsWith("/")) unixpath = unixpath.substring(1);
 
-            if (!shouldUpdateFile(unixpath) || newFiles.includes(unixpath)) continue;
+            if (
+                !shouldUpdateFile(unixpath) || 
+                newFiles.includes(unixpath) || 
+                unixpath === "dist/old_updater"
+            ) continue;
 
             console.log("Deleting old file", filepath, "/", unixpath);
             fs.rmSync(filepath);
