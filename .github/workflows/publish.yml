@@ -64,6 +64,10 @@ jobs:
         run: touch release/out/.keep
       - name: Clone TournamentStreamHelper
         run: git clone https://github.com/joaorb64/TournamentStreamHelper
+        # TSH broke assets lol
+      - name: Checkout known good version of TSH
+        working-directory: ./TournamentStreamHelper
+        run: git checkout b46d213b0ec56ece46d8fa10db8d1030a58b6655
       - name: Copy TSH layouts into boofstream
         run: cp -r TournamentStreamHelper/layout release/layouts
       - name: Copy TSH license into layouts

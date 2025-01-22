@@ -101,7 +101,7 @@ function convertCountry(country: string) {
     if (!country) return {};
     
     return {
-        "asset": `../boofstream/assets/country_flag/${country}.png`,
+        "asset": `./assets/country_flag/${country}.png`,
         "code": country.toUpperCase(),
     };
 }
@@ -110,7 +110,7 @@ function convertState(country: string, state: string) {
     if (!country || !state) return {};
     
     return {
-        "asset": `../boofstream/assets/state_flag/${country.toUpperCase()}/${state}.png`,
+        "asset": `./assets/state_flag/${country.toUpperCase()}/${state}.png`,
         "code": state,
     };
 }
@@ -130,7 +130,7 @@ function convertCharacter(character?: Character, characterColor?: CharacterColor
         "1": {
             assets: {
                 "base_files/icon": {
-                    asset: `../boofstream/assets/characters/chara_2_${Character[character].toLowerCase()}_${colorNumber}.png`,
+                    asset: `./assets/characters/chara_2_${Character[character].toLowerCase()}_${colorNumber}.png`,
                     average_size: { x: 24.0, y: 24.0 },
                     type: ["icon"],
                 }
