@@ -2,6 +2,7 @@ import { OBSConfig } from "boofstream-common";
 import SubConfigModal from "./SubConfigModal";
 import OutsideLink from "../OutsideLink";
 import BigButton from "../BigButton";
+import { useState } from "react";
 
 export default function OBSSubConfigModal(
     { isOpen, value, connected, onBack, onChange, onSave, onConnect, onDisconnect }:
@@ -16,10 +17,25 @@ export default function OBSSubConfigModal(
         onDisconnect: () => void,
     }
 ) {
+    const [lastValue, setLastValue] = useState(value);
+
+    function save(config: OBSConfig) {
+        onSave(config);
+        setLastValue(config);
+    }
+
+    function isDirty(): boolean {
+        return value.doSwitch !== lastValue.doSwitch ||
+            value.host !== lastValue.host ||
+            value.password !== lastValue.password ||
+            value.gameScene !== lastValue.gameScene ||
+            value.noGameScene !== lastValue.noGameScene;
+    }
+
     return <SubConfigModal 
         isOpen={isOpen}
         title="obs settings"
-        onSave={() => onSave(value)}
+        onSave={() => save(value)}
         onBack={onBack}
     >
         automatically switch between scenes when game starts/ends: <input
@@ -45,8 +61,9 @@ export default function OBSSubConfigModal(
             onChange={e => onChange({ ...value, noGameScene: e.target.value })}
         /><br />
         <OutsideLink href="https://obsproject.com/kb/remote-control-guide">more info</OutsideLink><br />
-        <BigButton onClick={connected ? onDisconnect : onConnect}>
+        <BigButton onClick={connected ? onDisconnect : onConnect} disabled={!connected && isDirty()}>
             { connected ? "disconnect from" : "connect to" } OBS
-        </BigButton>
+        </BigButton><br />
+        <small style={{ color: "red" }}>{ !connected && isDirty() ? "you must save before connecting" : "" }</small>
     </SubConfigModal>
 }
