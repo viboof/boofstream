@@ -12,6 +12,8 @@ import { ConnectionEvent, ConnectionStatus, ConsoleConnection, PlayerType } from
 import fs from "fs";
 import { createServer } from "http";
 
+const IS_RELEASE_ARTIFACT = false;
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
@@ -463,7 +465,7 @@ app.get("/die", async () => {
     throw new Error("die");
 })
 
-app.use("/", express.static("../boofstream-manager/out"));
+app.use("/", express.static(IS_RELEASE_ARTIFACT ? "dist/ui": "../boofstream-manager/out"));
 
-app.listen(1337, () => console.log("live!"));
+app.listen(1337, () => console.log("live! open your browser to http://localhost:1337"));
 server.listen(1338);
