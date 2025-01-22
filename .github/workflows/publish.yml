@@ -42,8 +42,13 @@ jobs:
       - name: Build boofstream
         working-directory: ./boofstream
         run: npx tsc
-      - name: Install yao-pkg
-        run: npm i -g @yao-pkg/pkg
+    # --- boofstream-updater ---
+      - name: Install boofstream-updater dependencies
+        working-directory: ./boofstream-updater
+        run: npm i --save-dev
+      - name: Build boofstream-updater
+        working-directory: ./boofstream-updater
+        run: npx tsc
     # --- release dir ---
       - name: Make release dir
         run: mkdir release
@@ -57,13 +62,19 @@ jobs:
         run: mkdir release/out
       - name: Keep out dir
         run: touch release/out/.keep
+      - name: Copy updater shouldUpdateFile.js
+        run: cp boofstream-updater/shouldUpdateFile.js release/dist/shouldUpdateFile.js
       - name: Clone TournamentStreamHelper
         run: git clone https://github.com/joaorb64/TournamentStreamHelper
       - name: Copy TSH layouts into boofstream
         run: cp -r TournamentStreamHelper/layout release/layouts
       - name: Copy TSH license into layouts
         run: cp TournamentStreamHelper/LICENSE release/layouts/LICENSE
+      - name: Write version.txt
+        run: git describe --tags > release/version.txt
     # --- artifacts ---
+      - name: Install yao-pkg
+        run: npm i -g @yao-pkg/pkg
       - name: Make release artifact (Windows x64)
         run: sh scripts/make-release-artifact.sh win-x64 windows-x64 .exe
       - name: Make release artifact (Windows arm64)
