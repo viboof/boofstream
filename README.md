@@ -13,6 +13,8 @@ on `scoreboard_4by3/melee_cameras` and commentator views).  these layouts are
 provided stock with boofstream.
 
 ## how to
+[boofstream in 4m20s on YouTube](https://www.youtube.com/watch?v=CEvCFOHxqaw)
+
 1. head to [the releases page](https://github.com/viboof/boofstream/releases)
 1. click the latest release
 1. download the zip file for your OS/architecture (note: only tested on Windows
