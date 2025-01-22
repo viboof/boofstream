@@ -6,7 +6,8 @@ import semver from "semver";
 import unzipper from "unzipper";
 import yesno from "yesno";
 
-const version = semver.clean(fs.readFileSync("dist/version.txt").toString("utf-8"))!!.trim().split("-")[0];
+const detailedVersion = semver.clean(fs.readFileSync("dist/version.txt").toString("utf-8"))!!.trim();
+const version = detailedVersion.split("-")[0];
 const osarch = fs.readFileSync("dist/osarch.txt").toString("utf-8").trim();
 
 async function main() {
@@ -30,22 +31,27 @@ async function main() {
 
     let highestRelease = null;
     let highestVersion = version;
+    let highestDetailedVersion = detailedVersion;
     let highestDate: Date | null = null;
 
     for (const release of releases) {
-        const releaseVersion = semver.clean(release.name)!!.split("-")[0];
+        const detailedReleaseVersion = semver.clean(release.name)!!;
+        const releaseVersion = detailedReleaseVersion.split("-")[0];
 
         if (semver.gt(releaseVersion, highestVersion)) {
             console.log("Found higher version:", releaseVersion, ">", highestVersion);
             highestRelease = release;
             highestVersion = releaseVersion;
+            highestDetailedVersion = detailedVersion;
             highestDate = new Date(release.published_at);
-        } else if (semver.eq(releaseVersion, highestVersion)) {
+        } else if (semver.eq(releaseVersion, highestVersion) && detailedReleaseVersion !== highestDetailedVersion) {
+            // covers cases like 0.0.1-test1 and 0.0.1-test2
             const date = new Date(release.published_at);
 
             if (!highestDate || date.getTime() > highestDate.getTime()) {
                 highestRelease = release;
                 highestVersion = releaseVersion;
+                highestDetailedVersion = detailedVersion;
                 highestDate = date;
             }
         }
