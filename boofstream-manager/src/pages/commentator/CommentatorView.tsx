@@ -36,6 +36,7 @@ export default function CommentatorView(
     const [loaded, setLoaded] = useState(false);
 
     const [showChangeSetModal, setShowChangeSetModal] = useState(false);
+    const [showCompletedSets, setShowCompletedSets] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [changeSetLoading, setChangeSetLoading] = useState(false);
 
@@ -290,7 +291,13 @@ export default function CommentatorView(
                 {/* ---- BEGIN MODALS ---- */}
 
                 <Modal title="select set" adamMode={state.adamMode} isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
-                    <SetSelector sets={sets} onSelect={loadSet} playerMap={playerMap} />
+                    <SetSelector 
+                        sets={sets} 
+                        onSelect={loadSet} 
+                        playerMap={playerMap}
+                        showCompleted={showCompletedSets}
+                        onChangeShowCompleted={setShowCompletedSets}
+                    />
                 </Modal>
 
                 <Modal title="settings" adamMode={state.adamMode} isOpen={showSettingsModal} onClose={() => setShowSettingsModal(false)}>

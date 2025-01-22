@@ -64,7 +64,12 @@ let state: BoofState = {
 };
 
 if (fs.existsSync("out/state.json")) {
-    state = JSON.parse(fs.readFileSync("out/state.json").toString("utf-8"));
+    try {
+        state = JSON.parse(fs.readFileSync("out/state.json").toString("utf-8"));
+    } catch {
+        console.log("state corrupted ... deleting :(");
+        fs.rmSync("out/state.json");
+    }
 }
 
 const P1_COLOR = "#00a800";

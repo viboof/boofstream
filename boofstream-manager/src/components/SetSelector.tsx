@@ -1,21 +1,20 @@
 import { BoofSet, StartggPlayer } from "@/app/types/boof";
-import { useState } from "react";
 import SetInfo from "./SetInfo";
 
 export default function SetSelector(props: { 
     sets: BoofSet[], 
-    onSelect: (set: BoofSet) => void, 
+    onSelect: (set: BoofSet) => void,
     playerMap: Map<number, StartggPlayer>,
+    showCompleted: boolean,
+    onChangeShowCompleted: (showCompleted: boolean) => void,
 }) {
-    const [showCompleted, setShowCompleted] = useState(false);
-
     return <div>
         <span>
             <center>show completed sets?{" "}
             <input 
                 type="checkbox"
-                checked={showCompleted} 
-                onChange={e => setShowCompleted(e.target.checked)}
+                checked={props.showCompleted} 
+                onChange={e => props.onChangeShowCompleted(e.target.checked)}
             /></center>
             <table>
                 <thead>
@@ -28,7 +27,7 @@ export default function SetSelector(props: {
                 <tbody>
                 {
                 props.sets
-                    .filter(set => showCompleted || !set.completed)
+                    .filter(set => props.showCompleted || !set.completed)
                     .map(set => <SetInfo 
                         set={set} 
                         playerMap={props.playerMap} 
