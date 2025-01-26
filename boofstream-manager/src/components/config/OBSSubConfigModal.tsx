@@ -1,7 +1,7 @@
 import { OBSConfig } from "boofstream-common";
 import SubConfigModal from "./SubConfigModal";
-import OutsideLink from "../OutsideLink";
-import BigButton from "../BigButton";
+import OutsideLink from "../utils/OutsideLink";
+import BigButton from "../forms/BigButton";
 import { useState } from "react";
 
 export default function OBSSubConfigModal(

@@ -1,7 +1,7 @@
 "use client";
 
 import { Character, CharacterColor } from "boofstream-common";
-import BoofSelect, { ValueObj } from "./BoofSelect";
+import BoofSelect, { ValueObj } from "./forms/BoofSelect";
 import CharacterAsset from "./CharacterAsset";
 
 export default function CharacterSelector(props: { value?: Character, onChange?: (value?: Character) => void }) {

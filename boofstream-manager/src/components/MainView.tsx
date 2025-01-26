@@ -1,17 +1,17 @@
 "use client";
 
 import { BoofConfig, BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
-import SimplePlayer from "./SimplePlayer";
+import PlayerInfo from "./playerinfo/PlayerInfo";
 import Image from "next/image";
 import Boof from "@/assets/boof.gif";
 import { useEffect, useState } from "react";
 import { getBackendHost } from "@/utils";
-import BigButton from "./BigButton";
+import BigButton from "./forms/BigButton";
 import PortMatcher from "./PortMatcher";
-import SetSelector from "./SetSelector";
+import SetSelector from "./setselector/SetSelector";
 import TournamentInfo from "./TournamentInfo";
-import Modal from "./Modal";
-import Hr from "./Hr";
+import Modal from "./utils/Modal";
+import Hr from "./utils/Hr";
 import ConfigModal from "./config/ConfigModal";
 
 const DEFAULT_PLAYER: Player = {
@@ -26,7 +26,7 @@ const DEFAULT_PLAYER: Player = {
     state: "",
 };
 
-export default function CommentatorView(
+export default function MainView(
     { state, config, onChange, onSave, onConfigChange, onConfigSave }: 
     { 
         state: BoofState,
@@ -241,7 +241,7 @@ export default function CommentatorView(
         </center>
 		<Hr margin={16} />
         <div className="column">
-            <SimplePlayer 
+            <PlayerInfo 
                 player={state.player1} 
                 sggPlayers={sggPlayers} 
                 isPlayer1={true} 
@@ -328,7 +328,7 @@ export default function CommentatorView(
             </div>
         </div>
         <div className="column">
-            <SimplePlayer 
+            <PlayerInfo 
                 player={state.player2} 
                 sggPlayers={sggPlayers} 
                 isPlayer1={false} 

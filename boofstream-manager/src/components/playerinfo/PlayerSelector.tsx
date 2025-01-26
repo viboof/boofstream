@@ -1,5 +1,5 @@
 import { Player, StartggPlayer } from "boofstream-common";
-import BigInput from "./BigInput";
+import BigInput from "../forms/BigInput";
 import { KeyboardEvent } from "react";
 
 export default function PlayerSelector({ value, onChange, sggPlayers, onPlayerSelect, onBlur, onKeyDown }: {

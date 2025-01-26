@@ -1,6 +1,6 @@
 import { useState } from "react";
-import BigButton from "../BigButton";
-import Modal from "../Modal";
+import BigButton from "../forms/BigButton";
+import Modal from "../utils/Modal";
 
 export default function SubConfigModal(
     { children, title, isOpen, onBack, onSave }:

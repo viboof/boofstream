@@ -1,7 +1,7 @@
 import Boof from "@/assets/boof.gif";
 import Image from "next/image";
 import ReactModal from "react-modal";
-import BigButton from "./BigButton";
+import BigButton from "../forms/BigButton";
 import Hr from "./Hr";
 
 export default function Modal(

@@ -1,5 +1,5 @@
 import { Character, CHARACTER_COLORS, CharacterColor } from "boofstream-common";
-import BoofSelect, { ValueObj } from "./BoofSelect";
+import BoofSelect, { ValueObj } from "./forms/BoofSelect";
 import CharacterAsset from "./CharacterAsset";
 import { useState } from "react";
 

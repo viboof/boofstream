@@ -1,7 +1,7 @@
 import { BoofConfig, BoofState } from "boofstream-common";
 import { getBackendHost, getSocketHost } from "@/utils";
 import { useEffect, useState } from "react";
-import CommentatorView from "../components/CommentatorView";
+import MainView from "../components/MainView";
 import { io } from "socket.io-client";
 
 const clientId = Math.random();
@@ -76,7 +76,7 @@ export default function CommentatorPage() {
             .catch(() => location.reload());
     });
 
-    return <CommentatorView 
+    return <MainView 
         state={state} 
         config={config}
         onChange={setState}

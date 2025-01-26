@@ -1,14 +1,14 @@
 import { CharacterColor, Player, StartggPlayer } from "boofstream-common";
-import BigInput from "@/components/BigInput";
-import CharacterColorSelector from "@/components/CharacterColorSelector";
-import CharacterSelector from "@/components/CharacterSelector";
-import CountrySelector from "@/components/CountrySelector";
-import PlayerSelector from "@/components/PlayerSelector";
-import Score from "@/components/Score";
-import { StateSelector } from "@/components/StateSelector";
+import BigInput from "@/components/forms/BigInput";
+import CharacterColorSelector from "./CharacterColorSelector";
+import CharacterSelector from "./CharacterSelector";
+import CountrySelector from "./CountrySelector";
+import PlayerSelector from "./PlayerSelector";
+import Score from "./Score";
+import { StateSelector } from "./StateSelector";
 import { KeyboardEvent } from "react";
 
-export default function SimplePlayer({ player, isPlayer1, sggPlayers, onChange, onSave }: { 
+export default function PlayerInfo({ player, isPlayer1, sggPlayers, onChange, onSave }: { 
     player: Player, 
     isPlayer1: boolean,
     sggPlayers: StartggPlayer[],

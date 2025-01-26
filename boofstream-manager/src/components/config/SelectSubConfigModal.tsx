@@ -1,5 +1,5 @@
-import BigButton from "../BigButton";
-import Modal from "../Modal";
+import BigButton from "../forms/BigButton";
+import Modal from "../utils/Modal";
 import Modals from "./modals";
 
 export default function SelectSubConfigModal(
