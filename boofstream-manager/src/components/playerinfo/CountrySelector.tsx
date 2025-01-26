@@ -1,7 +1,7 @@
 import { getBackendHost } from "@/utils";
 import { useEffect, useState } from "react";
-import BoofSelect from "./forms/BoofSelect";
-import Asset from "./Asset";
+import BoofSelect from "../forms/BoofSelect";
+import Asset from "../Asset";
 
 export default function CountrySelector(
     { value, onChange }: 
