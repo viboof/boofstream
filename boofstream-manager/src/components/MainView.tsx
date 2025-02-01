@@ -264,6 +264,20 @@ export default function MainView(
         onChangeAndSave(s);
     }
 
+    function toggleSetStarted() {
+        const s: BoofState = { ...state };  // copy
+        
+        // if we are ending
+        if (s.started && s.slippi) {
+            // reset game results
+            s.slippi.gameResults = [];
+        }
+
+        s.started = !s.started;
+        
+        onChangeAndSave(s);
+    }
+
     if (!loaded) {
         return null;
     }
@@ -309,7 +323,7 @@ export default function MainView(
                 <center>click me when {state.started ? "set is over" : "handwarmers are done"}:</center>
                 <BigButton 
                     color={state.started ? "red" : "#00ff00"}
-                    onClick={() => onChangeAndSave({ ...state, started: !state.started })}
+                    onClick={toggleSetStarted}
                 >
                     {state.started ? "end" : "start"} set
                 </BigButton>
