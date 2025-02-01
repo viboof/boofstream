@@ -51,7 +51,12 @@ type Slippi = {
     character2: Character,
     characterColor1: CharacterColor,
     characterColor2: CharacterColor,
+    stocksRemaining1: number,
+    stocksRemaining2: number,
     player1IsPort1?: boolean,
+    gameResults: GameResult[],
+    gameStartTimeUnix?: number,
+    stage?: MeleeStage,
 };
 
 type Tournament = {
@@ -96,6 +101,93 @@ type BoofSet = {
     phase: string,
     completed: boolean,
 }
+
+enum MeleeStage {
+    FOUNTAIN_OF_DREAMS = 2,
+    POKEMON_STADIUM = 3,
+    PEACHS_CASTLE = 4,
+    KONGO_JUNGLE = 5,
+    BRINSTAR = 6,
+    CORNERIA = 7,
+    YOSHIS_STORY = 8,
+    ONETT = 9,
+    MUTE_CITY = 10,
+    RAINBOW_CRUISE = 11,
+    JUNGLE_JAPES = 12,
+    GREAT_BAY = 13,
+    HYRULE_TEMPLE = 14,
+    BRINSTAR_DEPTHS = 15,
+    YOSHIS_ISLAND = 16,
+    GREEN_GREENS = 17,
+    FOURSIDE = 18,
+    MUSHROOM_KINGDOM = 19,
+    MUSHROOM_KINGDOM_2 = 20,
+    VENOM = 22,
+    POKE_FLOATS = 23,
+    BIG_BLUE = 24,
+    ICICLE_MOUNTAIN = 25,
+    ICETOP = 26,
+    FLAT_ZONE = 27,
+    DREAMLAND = 28,
+    YOSHIS_ISLAND_N64 = 29,
+    KONGO_JUNGLE_N64 = 30,
+    BATTLEFIELD = 31,
+    FINAL_DESTINATION = 32,
+    OTHER = -1,
+}
+
+const TOURNAMENT_LEGAL_STAGES = [
+    MeleeStage.YOSHIS_STORY,
+    MeleeStage.FOUNTAIN_OF_DREAMS,
+    MeleeStage.BATTLEFIELD,
+    MeleeStage.FINAL_DESTINATION,
+    MeleeStage.DREAMLAND,
+    MeleeStage.POKEMON_STADIUM
+];
+
+const STAGE_NAMES = {
+    [MeleeStage.FOUNTAIN_OF_DREAMS]: "Fountain of Dreams",
+    [MeleeStage.POKEMON_STADIUM]: "Pokémon Stadium",
+    [MeleeStage.PEACHS_CASTLE]: "Princess Peach's Castle",
+    [MeleeStage.KONGO_JUNGLE]: "Kongo Jungle",
+    [MeleeStage.BRINSTAR]: "Brinstar",
+    [MeleeStage.CORNERIA]: "Corneria",
+    [MeleeStage.YOSHIS_STORY]: "Yoshi's Story",
+    [MeleeStage.ONETT]: "Onett",
+    [MeleeStage.MUTE_CITY]: "Mute City",
+    [MeleeStage.RAINBOW_CRUISE]: "Rainbow Cruise",
+    [MeleeStage.JUNGLE_JAPES]: "Jungle Japes",
+    [MeleeStage.GREAT_BAY]: "Great Bay",
+    [MeleeStage.HYRULE_TEMPLE]: "Hyrule Temple",
+    [MeleeStage.BRINSTAR_DEPTHS]: "Brinstar Depths",
+    [MeleeStage.YOSHIS_ISLAND]: "Yoshi's Island",
+    [MeleeStage.GREEN_GREENS]: "Green Greens",
+    [MeleeStage.FOURSIDE]: "Foourside",
+    [MeleeStage.MUSHROOM_KINGDOM]: "Mushroom Kingdom I",
+    [MeleeStage.MUSHROOM_KINGDOM_2]: "Mushroom Kingdom II",
+    [MeleeStage.VENOM]: "Venom",
+    [MeleeStage.POKE_FLOATS]: "Poké Floats",
+    [MeleeStage.BIG_BLUE]: "Big Blue",
+    [MeleeStage.ICICLE_MOUNTAIN]: "Icicle Mountain",
+    [MeleeStage.ICETOP]: "Icetop",
+    [MeleeStage.FLAT_ZONE]: "Flat Zone",
+    [MeleeStage.DREAMLAND]: "Dream Land N64",
+    [MeleeStage.YOSHIS_ISLAND_N64]: "Yoshi's Island N64",
+    [MeleeStage.KONGO_JUNGLE_N64]: "Kongo Jungle N64",
+    [MeleeStage.BATTLEFIELD]: "Battlefield",
+    [MeleeStage.FINAL_DESTINATION]: "Final Destination",
+    [MeleeStage.OTHER]: "Other",
+}
+
+type GameResult = {
+    stage: MeleeStage,
+    stocksRemaining: number,
+    durationSeconds: number,
+    player1IsWinner: boolean,
+    player1Character: Character,
+    player2Character: Character,
+    index: number,
+};
 
 enum Character {
     CAPTAIN_FALCON = 0,
@@ -201,6 +293,7 @@ export type {
     Commentator, 
     StartggPlayer, 
     BoofSet, 
-    Slippi 
+    Slippi,
+    GameResult,
 };
-export { Character, CharacterColor, CHARACTER_COLORS };
+export { Character, CharacterColor, MeleeStage, CHARACTER_COLORS, STAGE_NAMES };

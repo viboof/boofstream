@@ -1,6 +1,6 @@
 "use client";
 
-import { BoofConfig, BoofSet, BoofState, Player, Slippi, StartggPlayer } from "boofstream-common";
+import { BoofConfig, BoofSet, BoofState, Character, GameResult, MeleeStage, Player, StartggPlayer } from "boofstream-common";
 import PlayerInfo from "./playerinfo/PlayerInfo";
 import Image from "next/image";
 import Boof from "@/assets/boof.gif";
@@ -13,6 +13,7 @@ import TournamentInfo from "./TournamentInfo";
 import Modal from "./utils/Modal";
 import Hr from "./utils/Hr";
 import ConfigModal from "./config/ConfigModal";
+import GameResultsInfo from "./gameresults/GameResultsInfo";
 
 const DEFAULT_PLAYER: Player = {
     score: 0,
@@ -221,6 +222,24 @@ export default function MainView(
 
         if (slippi && slippi.player1IsPort1 !== undefined && slippi.player1IsPort1 !== null) {
             slippi.player1IsPort1 = !slippi.player1IsPort1;
+            
+            const newGameResults: GameResult[] = [];
+
+            for (const r of slippi.gameResults) {
+                let result: GameResult = { ...r };  // copy
+
+                result.player1IsWinner = !r.player1IsWinner;
+                
+                const oldP1Char = result.player1Character;
+                const oldP2Char = result.player2Character;
+
+                result.player1Character = oldP2Char;
+                result.player2Character = oldP1Char;
+
+                newGameResults.push(result);
+            }
+
+            slippi.gameResults = newGameResults;
         }
 
         onChangeAndSave({
@@ -229,6 +248,20 @@ export default function MainView(
             player1: state.player2,
             player2: state.player1,
         });
+    }
+
+    function onChangeGameResults(gameResults: GameResult[], removedResult?: GameResult) {
+        let s: BoofState = { ...state };  // copy
+    
+        if (removedResult) {
+            console.log("removedResult", removedResult);
+            if (removedResult.player1IsWinner) s.player1.score--;
+            else s.player2.score--;
+        }
+
+        s.slippi!!.gameResults = gameResults;
+
+        onChangeAndSave(s);
     }
 
     if (!loaded) {
@@ -298,6 +331,16 @@ export default function MainView(
                         onChange={onPortMatch}
                     /> :
                     ""
+                }
+
+                <Hr margin={16} />
+                {state.slippi ?
+                    <GameResultsInfo 
+                        value={state.slippi.gameResults} 
+                        player1={state.player1}
+                        player2={state.player2}
+                        onChange={onChangeGameResults} 
+                    /> : ""
                 }
 
                 {/* ---- BEGIN MODALS ---- */}

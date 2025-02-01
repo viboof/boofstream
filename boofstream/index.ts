@@ -1,13 +1,13 @@
 import * as startgg from "./startgg";
 
-import { BoofConfig, BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, Player } from "boofstream-common";
+import { BoofConfig, BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, MeleeStage, Player } from "boofstream-common";
 
 import cors from "cors";
 import express from "express";
 import { OBSWebSocket } from "obs-websocket-js";
 import { Server } from "socket.io";
 import { SlpRealTime, SlpLiveStream } from "@vinceau/slp-realtime";
-import { ConnectionEvent, ConnectionStatus, ConsoleConnection, PlayerType } from "@slippi/slippi-js";
+import { ConnectionEvent, ConnectionStatus, PlayerType } from "@slippi/slippi-js";
 
 import fs from "fs";
 import { createServer } from "http";
@@ -322,7 +322,12 @@ app.post("/slippi/livestream", async (req, res) => {
             character2: e.players[1].characterId!!,
             characterColor1: parseCharacterColor(e.players[0]),
             characterColor2: parseCharacterColor(e.players[1]),
+            stocksRemaining1: e.players[0].startStocks!!,
+            stocksRemaining2: e.players[1].startStocks!!,
             player1IsPort1: state.slippi ? state.slippi.player1IsPort1 : undefined,
+            stage: e.stageId!!,
+            gameResults: state.slippi ? state.slippi.gameResults : [],
+            gameStartTimeUnix: Date.now(),
         }, slippiConnected: true };
 
         const slippi = state.slippi!!;
@@ -353,6 +358,15 @@ app.post("/slippi/livestream", async (req, res) => {
         console.log(state);
     });
 
+    realtime.stock.playerDied$.subscribe(e => {
+        if (!state.slippi || state.slippi.player1IsPort1 === undefined) return;
+
+        const isPort1 = state.slippi.port1 - 1 === e.playerIndex;
+
+        if (isPort1) state.slippi.stocksRemaining1--;
+        else state.slippi.stocksRemaining2--;
+    })
+
     livestream.gameEnd$.subscribe(e => {
         const { slippi } = state;
         if (state.obsConnected && config.obs.doSwitch) {
@@ -377,6 +391,33 @@ app.post("/slippi/livestream", async (req, res) => {
             state.player1.score++;
         } else {
             state.player2.score++;
+        }
+
+        const stocksRemaining = slippi.stocksRemaining1 
+            ? slippi.stocksRemaining1 
+            : slippi.stocksRemaining2;
+
+        const player1Character = slippi.player1IsPort1 ? slippi.character1 : slippi.character2;
+        const player2Character = slippi.player1IsPort1 ? slippi.character2 : slippi.character1;
+
+        if (slippi.stage && slippi.gameStartTimeUnix) {
+            let highestGameResultIdx = -1;
+
+            for (const result of slippi.gameResults) {
+                if (result.index > highestGameResultIdx) {
+                    highestGameResultIdx = result.index;
+                }
+            }
+
+            state.slippi!!.gameResults.push({
+                stage: slippi.stage!!,
+                stocksRemaining,
+                player1IsWinner: player1Wins,
+                player1Character,
+                player2Character,
+                durationSeconds: Math.round((Date.now() - slippi.gameStartTimeUnix) / 1000),
+                index: highestGameResultIdx + 1,
+            });
         }
 
         writeState();
