@@ -1,35 +1,29 @@
+# boofstream is beta software, use at your own risk
+## [click here for known issues](https://github.com/viboof/boofstream/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
+
 ![screenshot of boofstream](https://github.com/user-attachments/assets/f4a74f02-8f24-4d83-9d01-3811095f9516)
 
 # boofstream
 <img width="322" alt="image" src="https://github.com/user-attachments/assets/2413972e-4f44-478d-ba40-d0ad4cb2c5ad">
 
-boofstream is a simple streaming tool created by viboof originally for use in
-the [Munchie Bar Melee Extravaganza](https://start.gg/mbme) (RIP) broadcasts,
-and is now in use in various random viboof-produced tournaments.
-
-## layouts
-boofstream is (somewhat) compatible with TournamentStreamHelper layouts (tested
-on `scoreboard_4by3/melee_cameras` and commentator views).  these layouts are
-provided stock with boofstream.
+boofstream is an overlay tool created by viboof that connects to a Wii running
+Melee through a Slippi console relay.  it is capable of switching OBS scenes
+when the game starts/ends, automatically updating the set count
+and each player's characters, and pulling set and player info from start.gg.
 
 ## how to
-[boofstream in 4m20s on YouTube](https://www.youtube.com/watch?v=CEvCFOHxqaw)
-
+### [boofstream in 4m20s on YouTube](https://www.youtube.com/watch?v=CEvCFOHxqaw)
 1. head to [the releases page](https://github.com/viboof/boofstream/releases)
 1. click the latest release
 1. download the zip file for your OS/architecture (note: only tested on Windows
 x64)
-1. unzip the file, keep boofstream in the directory with all its files
-1. run boofstream.exe
+1. unzip the folder
+1. run boofstream.exe.  only ever run it in the folder it comes in, and don't
+   move boofstream.exe or delete other files in the folder
 
-## why not TSH?
-in my experience, TournamentStreamHelper is fairly unstable on macOS, which the
-Munchie Bar stream is run on (i'm no Apple fangirl, but find me a better 
-graphics power/battery life/build quality/portability mix for a bar stream).  i
-love the software though, and take great inspiration from it.  i also intend on
-have some cool functionality involving realtime stuff with Slippi console 
-mirroring, so it's nice to have total control over and familiarity with the
-codebase.
+## locals that use(d) boofstream
+- [Monkeyseed](https://youtube.com/playlist?list=PLOd3GI-BBpHwbHcJER1LwlTDqGmRPtAvc)
+- [Munchie Bar Melee Extravaganza](https://youtube.com/playlist?list=PLOd3GI-BBpHxi5q8wKdFvsM2MeeCjeyY-)
 
 ## thanks
 - huge thanks to the talented 
@@ -45,4 +39,5 @@ direct support for some
 which i used extensively prior to developing boofstream, and whose layouts i
 still use
 - danke to everyone who watches the streams i produce :)
+- grazie to Monkey-Nut & starseed for making Monkeyseed with me
 - oregon melee 🗣️
