@@ -39,5 +39,4 @@ direct support for some
 which i used extensively prior to developing boofstream, and whose layouts i
 still use
 - danke to everyone who watches the streams i produce :)
-- grazie to Monkey-Nut & starseed for making Monkeyseed with me
 - oregon melee 🗣️
