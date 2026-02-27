@@ -2,6 +2,7 @@ import { BracketServiceClient, BracketSlugId, EventIdentifier, EventServiceClien
 import { BoofSet, StartggPlayer } from "boofstream-common";
 import { Request, Response } from "express";
 import { wrap } from "./webutil";
+import { getRounds } from "./rounds";
 
 global.XMLHttpRequest = require("xhr2");
 
@@ -100,7 +101,18 @@ async function _sets(req: Request, res: Response) {
         seedIdsToEntrantIds.set(seed.getId(), seed.getEventEntrant()!!.getEntrant()!!.getId());
     }
 
-    for (const match of bracketResp.getBracket()!!.getMatchesList()) {
+    const matches = bracketResp.getBracket()!!.getMatchesList();
+    const rounds = getRounds(matches);
+
+    const winnersRoundsMap: Map<number, string> = new Map();
+    const losersRoundsMap: Map<number, string> = new Map();
+
+    for (const round of rounds) {
+        (round.winnersSide ? winnersRoundsMap : losersRoundsMap)
+            .set(round.round, round.label);
+    }
+
+    for (const match of matches) {
         const p1id = seedIdsToEntrantIds.get(match.getSlotsList()[0].getSeedId());
         const p2id = seedIdsToEntrantIds.get(match.getSlotsList()[1].getSeedId());
 
@@ -108,20 +120,11 @@ async function _sets(req: Request, res: Response) {
             continue;
         }
 
-        let round: string;
-
-        if (match.getGrandFinals()) {
-            round = "Grand Final";
-        } else {
-            const side = match.getWinnersSide() ? "Winners" : "Losers";
-            round = side + " Round " + match.getRound();
-        }
-
         sets.push({
             id: match.getId(),
             player1Id: p1id,
             player2Id: p2id,
-            round,
+            round: match.getWinnersSide() ? winnersRoundsMap.get(match.getRound())!! : losersRoundsMap.get(match.getRound())!!,
             phase: "Bracket",
             completed: match.getState() == MatchState.MATCH_STATE_COMPLETED,
         });
