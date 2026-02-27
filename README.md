@@ -38,5 +38,7 @@ direct support for some
 [TournamentStreamHelper](https://github.com/joaorb64/TournamentStreamHelper),
 which i used extensively prior to developing boofstream, and whose layouts i
 still use
+- warm thank you to cannonball for financial support for the parry.gg integration
+- and thanks to blorppp and the parry.gg team for helping us integrate!!
 - danke to everyone who watches the streams i produce :)
 - oregon melee 🗣️
