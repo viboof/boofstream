@@ -4,7 +4,10 @@ const nextConfig = {
     images: {
         // need this for static export
         unoptimized: true,
-    }
+    },
+    transpilePackages: [
+        "boofstream-common"
+    ]
 };
 
 export default nextConfig;

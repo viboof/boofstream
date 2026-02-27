@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import fs from "fs";
 import { BoofSet, StartggPlayer } from "boofstream-common";
 import countriesToCodes from "./countriesToCodes";
+import { wrap } from "./webutil";
 
 const COUNTRIES_TO_CODES = countriesToCodes as any;
 
@@ -87,18 +88,6 @@ const REPORT_GQL = (
 }`;
 
 const REPORT_GAME_GQL = (winnerId: number, gameNum: number) => `{ winnerId: ${winnerId}, gameNum: ${gameNum} }`;
-
-export function wrap(f: (req: Request, res: Response) => Promise<void>) {
-    return async function wrapped(req: Request, res: Response) {
-        try {
-            await f(req, res);
-        } catch (e: any) {
-            console.error(e);
-            res.json({ error: e.toString() });
-            res.status(500);
-        }
-    }
-}
 
 async function gqlfetch(res: Response, query: string, variables: any) {
     const resp = (await fetch(

@@ -53,13 +53,9 @@ export default function MainView(
     async function loadPlayers(tourneyUrl: string | undefined = tournamentUrl) {
         if (!tourneyUrl) return;
 
-        const parts = tourneyUrl.split("start.gg/")[1].split("/");
+        const api = tourneyUrl.includes("parry.gg") ? "parrygg" : "startgg";
 
-        // 0          1                            2     3             4
-        // tournament/don-t-park-on-the-grass-2024/event/melee-singles/brackets
-        const url = "https://start.gg/" + parts.slice(0, 4).join("/");
-
-        const res = await fetch(getBackendHost() + "startgg/init?url=" + encodeURIComponent(url));
+        const res = await fetch(getBackendHost() + api + "/init?url=" + encodeURIComponent(tourneyUrl));
         const json = await res.json()
         if (json.error) {
             console.error("ERROR LOADING PLAYERS:", json.error);
@@ -71,14 +67,12 @@ export default function MainView(
     }
 
     async function loadSets(url: string) {
-        const parts = url.split("start.gg/")[1].split("/");
+        if (!url) return;
+        const api = url.includes("parry.gg") ? "parrygg" : "startgg";
 
-        // 0          1                            2     3             4
-        // tournament/don-t-park-on-the-grass-2024/event/melee-singles/brackets
-        url = "https://start.gg/" + parts.slice(0, 4).join("/");
-
-        const res = await fetch(getBackendHost() + "startgg/sets?url=" + encodeURIComponent(url));
+        const res = await fetch(getBackendHost() + api + "/sets?url=" + encodeURIComponent(url));
         const json = await res.json();
+
         if (json.error) {
             console.error("ERROR LOADING SETS:", json.error);
             // await loadSets(url);
@@ -172,8 +166,8 @@ export default function MainView(
         });
     }
 
-    function computePlayerMap(): Map<number, StartggPlayer> {
-        const map: Map<number, StartggPlayer> = new Map();
+    function computePlayerMap(): Map<any, StartggPlayer> {
+        const map: Map<any, StartggPlayer> = new Map();
 
         for (const player of sggPlayers) {
             map.set(player.entrantId, player);
@@ -374,7 +368,7 @@ export default function MainView(
                     value={config}
                     obsConnected={state.obsConnected}
                     // admins have negative entrant IDs
-                    startggPlayerCount={sggPlayers.filter(p => p.entrantId >= 0).length}
+                    startggPlayerCount={sggPlayers.length}
                     onClose={() => setShowSettingsModal(false)}
                     onChange={onConfigChange}
                     onSave={onConfigSave}

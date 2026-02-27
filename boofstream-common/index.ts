@@ -81,7 +81,7 @@ type Player = {
 }
 
 type StartggPlayer = {
-    entrantId: number,
+    entrantId: any,
     player: Player,
 }
 
@@ -95,8 +95,8 @@ type Commentator = {
 
 type BoofSet = {
     id: string | number,
-    player1Id: number,
-    player2Id: number,
+    player1Id: any,
+    player2Id: any,
     round: string,
     phase: string,
     completed: boolean,

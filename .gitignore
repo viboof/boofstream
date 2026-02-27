@@ -1,6 +1,8 @@
 node_modules
 .DS_Store
 boofstream/out/*.json
+boofstream/out/**/*.txt
+boofstream/out/**/*.png
 boofstream/config.json
 boofstream-common/dist
 boofstream/dist

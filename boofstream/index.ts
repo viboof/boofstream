@@ -1,4 +1,5 @@
 import * as startgg from "./startgg";
+import * as parrygg from "./parrygg";
 
 import { BoofConfig, BoofState, Character, CHARACTER_COLORS, CharacterColor, Commentator, MeleeStage, Player } from "boofstream-common";
 
@@ -217,6 +218,49 @@ function writeState() {
         },
         commentary: state.commentators.map(convertCommentator),
     }));
+
+    fs.mkdirSync("out/p1", { recursive: true });
+    fs.mkdirSync("out/p2", { recursive: true });
+
+    txt(1, "sponsor", state.player1.sponsor);
+    txt(1, "name", state.player1.name);
+    txt(1, "score", state.player1.score);
+    txt(1, "seed", state.player1.seed);
+    txt(1, "pronouns", state.player1.pronouns);
+    txt(1, "twitter", state.player1.twitter);
+    charpng(1, state.player1.character, state.player1.characterColor);
+
+    txt(2, "sponsor", state.player2.sponsor);
+    txt(2, "name", state.player2.name);
+    txt(2, "score", state.player2.score);
+    txt(2, "seed", state.player2.seed);
+    txt(2, "pronouns", state.player2.pronouns);
+    txt(2, "twitter", state.player2.twitter);
+    charpng(2, state.player2.character, state.player2.characterColor);
+}
+
+function charpng(player: number, character?: Character, characterColor?: CharacterColor) {
+    const path = `out/p${player}/char.png`;
+    
+    if (!character && character != 0) {
+        fs.copyFileSync("assets/transparent.png", path);
+        return;
+    }
+    
+    const color = characterColor == CharacterColor.DEFAULT
+        ? 0
+        : CHARACTER_COLORS[character].indexOf(characterColor!!) + 1;
+
+    const colorNumber = color < 10 
+        ? "0" + color 
+        : "" + color;
+    
+    const assetPath = `./assets/characters/chara_2_${Character[character].toLowerCase()}_${colorNumber}.png`;
+    fs.copyFileSync(assetPath, path);
+}
+
+function txt(player: number, key: string, value: any) {
+    fs.writeFileSync(`out/p${player}/${key}.txt`, "" + value);
 }
 
 app.post("/state", (req, res) => {
@@ -262,7 +306,8 @@ app.use((_, res, next) => {
 
 app.get("/startgg/init", startgg.init);
 app.get("/startgg/sets", startgg.sets);
-app.post("/startgg/sets/report", startgg.report);
+app.get("/parrygg/init", parrygg.init);
+app.get("/parrygg/sets", parrygg.sets);
 
 function parseCharacterColor(player: PlayerType) {
     if (!player.characterColor) {

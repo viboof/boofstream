@@ -15,14 +15,18 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "@parry-gg/client": "^1.0.9",
     "@slippi/slippi-js": "^6.7.0",
     "@types/cors": "^2.8.17",
     "@vinceau/slp-realtime": "^4.0.0",
     "boofstream-common": "file:../boofstream-common",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
     "obs-websocket-js": "^5.0.6",
     "rxjs": "^6.6.7",
-    "socket.io": "^4.8.0"
+    "socket.io": "^4.8.0",
+    "xhr2": "^0.2.1"
   }
 }
