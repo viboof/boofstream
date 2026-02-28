@@ -11,8 +11,10 @@ import { SlpRealTime, SlpLiveStream } from "@vinceau/slp-realtime";
 import { ConnectionEvent, ConnectionStatus, PlayerType } from "@slippi/slippi-js";
 
 import fs from "fs";
+import os from "os";
 import { createServer } from "http";
 import isReleaseArtifact from "./isReleaseArtifact";
+import { execSync } from "child_process";
 
 const app = express();
 const server = createServer(app);
@@ -244,7 +246,7 @@ function writeState() {
 
 function charpng(player: number, character?: Character, characterColor?: CharacterColor) {
     const path = `out/p${player}/char.png`;
-    try { fs.rmSync(path); } catch {}
+    try { removeFile(path); } catch {}
     
     if (!character && character != 0) {
         fs.copyFileSync("assets/transparent.png", path);
@@ -260,7 +262,25 @@ function charpng(player: number, character?: Character, characterColor?: Charact
         : "" + color;
     
     const assetPath = `./assets/characters/chara_2_${Character[character].toLowerCase()}_${colorNumber}.png`;
-    fs.copyFileSync(assetPath, path);
+    copyFile(assetPath, path);
+}
+
+// hack to get OBS images to work on windows
+function copyFile(src: string, dest: string) {
+    if (os.platform() === "win32") {
+        execSync("cp " + src + " " + dest);
+    } else {
+        fs.copyFileSync(src, dest);
+    }
+}
+
+// hack to get OBS images to work on windows
+function removeFile(dest: string) {
+    if (os.platform() === "win32") {
+        execSync("del " + dest);
+    } else {
+        fs.rmSync(dest);
+    }
 }
 
 function txt(player: number, key: string, value: any) {
