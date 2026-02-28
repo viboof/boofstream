@@ -237,6 +237,9 @@ function writeState() {
     txt(2, "pronouns", state.player2.pronouns);
     txt(2, "twitter", state.player2.twitter);
     charpng(2, state.player2.character, state.player2.characterColor);
+
+    fs.writeFileSync("out/round.txt", state.tournament.match);
+    fs.writeFileSync("out/phase.txt", state.tournament.phase);
 }
 
 function charpng(player: number, character?: Character, characterColor?: CharacterColor) {
