@@ -244,6 +244,7 @@ function writeState() {
 
 function charpng(player: number, character?: Character, characterColor?: CharacterColor) {
     const path = `out/p${player}/char.png`;
+    try { fs.rmSync(path); } catch {}
     
     if (!character && character != 0) {
         fs.copyFileSync("assets/transparent.png", path);
