@@ -262,16 +262,7 @@ function charpng(player: number, character?: Character, characterColor?: Charact
         : "" + color;
     
     const assetPath = `./assets/characters/chara_2_${Character[character].toLowerCase()}_${colorNumber}.png`;
-    copyFile(assetPath, path);
-}
-
-// hack to get OBS images to work on windows
-function copyFile(src: string, dest: string) {
-    if (os.platform() === "win32") {
-        execSync("cp " + src + " " + dest);
-    } else {
-        fs.copyFileSync(src, dest);
-    }
+    fs.copyFileSync(assetPath, path);
 }
 
 // hack to get OBS images to work on windows
