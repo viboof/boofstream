@@ -225,7 +225,7 @@ function writeState() {
     fs.mkdirSync("out/p2", { recursive: true });
 
     txt(1, "sponsor", state.player1.sponsor);
-    txt(1, "name", state.player1.name);
+    txtname(1, state.player1);
     txt(1, "score", state.player1.score);
     txt(1, "seed", state.player1.seed);
     txt(1, "pronouns", state.player1.pronouns);
@@ -233,7 +233,7 @@ function writeState() {
     charpng(1, state.player1.character, state.player1.characterColor);
 
     txt(2, "sponsor", state.player2.sponsor);
-    txt(2, "name", state.player2.name);
+    txtname(2, state.player2);
     txt(2, "score", state.player2.score);
     txt(2, "seed", state.player2.seed);
     txt(2, "pronouns", state.player2.pronouns);
@@ -242,6 +242,16 @@ function writeState() {
 
     fs.writeFileSync("out/round.txt", state.tournament.match);
     fs.writeFileSync("out/phase.txt", state.tournament.phase);
+}
+
+function txtname(playerNum: number, player: Player) {
+    let out = player.name;
+
+    if (player.losers && config.customization.appendLToLosers) {
+        out += " [L]";
+    }
+
+    txt(playerNum, "name", out);
 }
 
 function charpng(player: number, character?: Character, characterColor?: CharacterColor) {
