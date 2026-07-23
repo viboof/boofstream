@@ -2,7 +2,7 @@
 # usage: ./scripts/make-release-artifact.sh win-x64 windows-x64 .exe
 # for making a win-x64 artifact named boofstream.exe in zip boofstream-v1.0.0-windows-x64.zip
 
-NODE_TARGET=node20
+NODE_TARGET=node22
 VERSION=$(git describe --tags)
 
 echo Packaging boofstream
