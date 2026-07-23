@@ -50,10 +50,12 @@ const INIT_GQL = `query($tournamentSlug: String, $eventSlug: String) {
   }
 }`;
 
-// TODO: cannot support >500 sets
-const SETS_GQL = `query($eventSlug: String) {
+const SETS_GQL = `query($eventSlug: String, $page: Int) {
   event(slug: $eventSlug) {
-    sets(perPage: 500) {
+    sets(perPage: 50, page: $page, filters: { hideEmpty: true }) {
+      pageInfo {
+        totalPages
+      }
       nodes {
         id
         fullRoundText
@@ -182,9 +184,28 @@ async function _sets(req: Request, res: Response) {
     const url = req.query.url as string;
     const eventSlug = url.split(".gg/")[1];
 
-    const data = await gqlfetch(res, SETS_GQL, { eventSlug });
+    const firstPage = await _setsPage(res, eventSlug, 1);
+    const { pages } = firstPage;
+    let { sets } = firstPage;
+    
+    if (pages > 1) {
+        let promises = [];
 
+        for (let i = 2; i <= pages; i++) {
+            promises.push(_setsPage(res, eventSlug, i));
+        }
+
+        sets.push(...(await Promise.all(promises)).flatMap(page => page.sets));
+    }
+
+    res.json(sets);
+}
+
+async function _setsPage(res: Response, eventSlug: string, page: number) {
     let sets: BoofSet[] = [];
+
+    // FIXME: what the fuck was i cooking with this res bullshit
+    const data = await gqlfetch(res, SETS_GQL, { eventSlug, page });
 
     for (const set of data.event.sets.nodes) {
         sets.push({
@@ -197,7 +218,10 @@ async function _sets(req: Request, res: Response) {
         })
     }
 
-    res.json(sets.filter(s => s.player1Id && s.player2Id));
+    return { 
+        pages: data.event.sets.pageInfo.totalPages as number,
+        sets: sets.filter(s => s.player1Id && s.player2Id) 
+    };
 }
 
 async function _report(req: Request, res: Response) {
