@@ -582,16 +582,5 @@ app.get("/die", async () => {
 
 app.use("/", express.static(isReleaseArtifact ? "dist/ui": "../boofstream-manager/out"));
 
-function tryPorts(mult: number) {
-    if (mult === 10) {
-        console.log("could not find a port to run on :(");
-    }
-
-    const onError = (_: unknown) => tryPorts(mult + 1);
-
-    const base = (mult * 1000) + 337;
-    app.listen(base, () => console.log("live! open your browser to http://localhost:1337"));
-    server.listen(base + 1);
-}
-
-tryPorts(1);
+app.listen(1337, () => console.log("live! open your browser to http://localhost:1337"));
+server.listen(1338);
