@@ -1,11 +1,11 @@
 import { Character, CHARACTER_COLORS, CharacterColor } from "boofstream-common";
 
 export function getBackendHost() {
-    return "http://" + location.hostname + ":1337/";
+    return `http://${location.hostname}:${location.port}/`;
 }
 
 export function getSocketHost() {
-    return "http://" + location.hostname + ":1338/";
+    return `http://${location.hostname}:${location.port + 1}/`
 }
 
 export function getCharacterAssetName(character: Character, color: CharacterColor) {
