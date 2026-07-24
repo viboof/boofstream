@@ -7,11 +7,11 @@ VERSION=$(git describe --tags)
 
 echo Packaging boofstream
 cd boofstream
-pkg -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
+pkg --public-packages "*" --public -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
 
 echo Packaging boofstream-updater
 cd ../boofstream-updater
-pkg -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
+pkg --public-packages "*" --public -t "$NODE_TARGET"-"$1" dist/index.js -o dist/boofstream"$3"
 
 cd ../release
 cp ../boofstream/dist/boofstream"$3" dist/boofstream"$3"
