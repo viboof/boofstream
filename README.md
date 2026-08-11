@@ -42,3 +42,7 @@ still use
 - and thanks to blorppp and the parry.gg team for helping us integrate!!
 - danke to everyone who watches the streams i produce :)
 - oregon melee 🗣️
+
+## support
+
+join the discord for support: https://discord.gg/6Y6WQQjtYm
