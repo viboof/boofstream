@@ -1,9 +1,7 @@
 "use client";
 
-import { BoofConfig, BoofSet, BoofState, Character, GameResult, MeleeStage, Player, StartggPlayer } from "boofstream-common";
+import { BoofConfig, BoofSet, BoofState, GameResult, Player, StartggPlayer } from "boofstream-common";
 import PlayerInfo from "./playerinfo/PlayerInfo";
-import Image from "next/image";
-import Boof from "@/assets/boof.gif";
 import { useEffect, useState } from "react";
 import { getBackendHost } from "@/utils";
 import BigButton from "./forms/BigButton";
@@ -14,6 +12,7 @@ import Modal from "./utils/Modal";
 import Hr from "./utils/Hr";
 import ConfigModal from "./config/ConfigModal";
 import GameResultsInfo from "./gameresults/GameResultsInfo";
+import BoofTitle from "./utils/BoofTitle";
 
 const DEFAULT_PLAYER: Player = {
     score: 0,
@@ -322,9 +321,7 @@ export default function MainView(
     }
 
     return <div style={{ margin: "32px", fontFamily: "sans-serif" }}>
-        <center>
-            <Image src={Boof} alt="boof logo" /> <h1 style={{ display: "inline", fontSize: 64 }}>boofstream</h1>
-        </center>
+        <center><BoofTitle sizePx={64}>boofstream</BoofTitle></center>
 		<Hr margin={16} />
         <div className="column">
             <PlayerInfo 

@@ -1,8 +1,9 @@
-import Boof from "@/assets/boof.gif";
+import Boof from "@/assets/boof.png";
 import Image from "next/image";
 import ReactModal from "react-modal";
 import BigButton from "../forms/BigButton";
 import Hr from "./Hr";
+import BoofTitle from "./BoofTitle";
 
 export default function Modal(
     { isOpen, children, title, onClose, closeText = "close" }: React.PropsWithChildren<{ 
@@ -25,7 +26,7 @@ export default function Modal(
     };
 
     return <ReactModal isOpen={isOpen} style={style}>
-        <Image src={Boof} height={32} alt="boof logo" /> <h1 style={{ display: "inline", fontSize: 32 }}>{title}</h1>{" "}
+        <BoofTitle sizePx={32}>{title}</BoofTitle>{" "}
         <BigButton onClick={onClose}>{closeText}</BigButton>
         <Hr />
         {children}
