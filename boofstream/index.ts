@@ -278,7 +278,7 @@ function charpng(player: number, character?: Character, characterColor?: Charact
 // hack to get OBS images to work on windows
 function removeFile(dest: string) {
     if (os.platform() === "win32") {
-        execSync("del " + dest);
+        execSync("del " + dest.replaceAll("/", "\\"));
     } else {
         fs.rmSync(dest);
     }
