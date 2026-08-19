@@ -46,12 +46,30 @@ export default function MainView(
     const [showCompletedSets, setShowCompletedSets] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [changeSetLoading, setChangeSetLoading] = useState(false);
+    const [isSetSelectorRefreshing, setSetSelectorRefreshing] = useState(false);
 
     const slippiPort = config.slippi.port;
     const tournamentUrl = config.startgg.tournamentUrl;
 
     async function loadPlayers(tourneyUrl: string | undefined = tournamentUrl) {
         if (!tourneyUrl) return;
+
+        let playerCache: { url: string, players: StartggPlayer[] } | undefined;
+        let playerCacheJson = localStorage.getItem("playerCache");
+
+        if (playerCacheJson) {
+            playerCache = JSON.parse(playerCacheJson);
+
+            if (!playerCache || tourneyUrl !== playerCache.url) {
+                localStorage.removeItem("playerCache");
+                playerCache = undefined;
+            }
+        }
+
+        if (playerCache) {
+            setSggPlayers(playerCache.players);
+            return;
+        }
 
         const api = tourneyUrl.includes("parry.gg") ? "parrygg" : "startgg";
 
@@ -64,10 +82,29 @@ export default function MainView(
         }
         console.log("setting sggPlayers:",json.players);
         setSggPlayers(json.players);
+        localStorage.setItem("playerCache", JSON.stringify({ url: tourneyUrl, players: json.players }));
     }
 
     async function loadSets(url: string) {
         if (!url) return;
+
+        let setCache: { url: string, sets: BoofSet[] } | undefined;
+        let setCacheJson = localStorage.getItem("setCache");
+
+        if (setCacheJson) {
+            setCache = JSON.parse(setCacheJson);
+
+            if (!setCache || url !== setCache.url) {
+                localStorage.removeItem("setCache");
+                setCache = undefined;                
+            }
+        }
+
+        if (setCache) {
+            setSets(setCache.sets);
+            return;
+        }
+
         const api = url.includes("parry.gg") ? "parrygg" : "startgg";
 
         const res = await fetch(getBackendHost() + api + "/sets?url=" + encodeURIComponent(url));
@@ -78,6 +115,8 @@ export default function MainView(
             // await loadSets(url);
             return;
         }
+
+        localStorage.setItem("setCache", JSON.stringify({ url, sets: json }));
         setSets(json);
     }
 
@@ -272,6 +311,12 @@ export default function MainView(
         onChangeAndSave(s);
     }
 
+    function refreshSets() {
+        setSetSelectorRefreshing(true);
+        localStorage.removeItem("setCache");
+        loadSets(tournamentUrl).finally(() => setSetSelectorRefreshing(false));
+    }
+
     if (!loaded) {
         return null;
     }
@@ -355,11 +400,13 @@ export default function MainView(
 
                 <Modal title="select set" isOpen={showChangeSetModal} onClose={() => setShowChangeSetModal(false)}>
                     <SetSelector 
+                        onRefresh={refreshSets}
                         sets={sets} 
                         onSelect={loadSet} 
                         playerMap={playerMap}
                         showCompleted={showCompletedSets}
                         onChangeShowCompleted={setShowCompletedSets}
+                        isSetSelectorRefreshing={isSetSelectorRefreshing}
                     />
                 </Modal>
 

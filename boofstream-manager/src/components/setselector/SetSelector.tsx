@@ -6,10 +6,15 @@ export default function SetSelector(props: {
     onSelect: (set: BoofSet) => void,
     playerMap: Map<number, StartggPlayer>,
     showCompleted: boolean,
+    isSetSelectorRefreshing: boolean,
     onChangeShowCompleted: (showCompleted: boolean) => void,
+    onRefresh: () => void,
 }) {
     return <div>
         <span>
+            <button disabled={props.isSetSelectorRefreshing} onClick={props.onRefresh}>
+                {props.isSetSelectorRefreshing ? "refreshing..." : "refresh"}
+            </button>
             <center>show completed sets?{" "}
             <input 
                 type="checkbox"
