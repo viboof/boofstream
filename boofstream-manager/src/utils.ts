@@ -5,7 +5,7 @@ export function getBackendHost() {
 }
 
 export function getSocketHost() {
-    return `http://${location.hostname}:${location.port + 1}/`
+    return `http://${location.hostname}:${Number(location.port) + 1}/`
 }
 
 export function getCharacterAssetName(character: Character, color: CharacterColor) {
