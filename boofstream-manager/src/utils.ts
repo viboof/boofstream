@@ -1,14 +1,14 @@
 import { Character, CHARACTER_COLORS, CharacterColor } from "boofstream-common";
 
 export function getBackendHost() {
-    if (location.hostname === "localhost") {
+    if (location.port === "3000") {
         return "http://localhost:1337/";
     }
     return `http://${location.hostname}:${location.port}/`;
 }
 
 export function getSocketHost() {
-    if (location.hostname === "localhost") {
+    if (location.port === "3000") {
         return "http://localhost:1338/";
     }
     return `http://${location.hostname}:${Number(location.port) + 1}/`
