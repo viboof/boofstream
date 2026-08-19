@@ -11,6 +11,8 @@ Melee through a Slippi console relay.  it is capable of switching OBS scenes
 when the game starts/ends, automatically updating the set count
 and each player's characters, and pulling set and player info from start.gg.
 
+**need support? join the new [boofstream discord](https://discord.gg/VfEjpyMWta)!**
+
 ## how to
 ### [boofstream in 4m20s on YouTube](https://www.youtube.com/watch?v=CEvCFOHxqaw)
 1. head to [the releases page](https://github.com/viboof/boofstream/releases)
