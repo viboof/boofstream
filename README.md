@@ -1,10 +1,18 @@
 # boofstream is beta software, use at your own risk
-## [click here for known issues](https://github.com/viboof/boofstream/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
 
-![screenshot of boofstream](https://github.com/user-attachments/assets/f4a74f02-8f24-4d83-9d01-3811095f9516)
+<img 
+   width="1264" 
+   height="825" 
+   alt="screenshot of boofstream" src="https://github.com/user-attachments/assets/64ae1f77-b4a1-4b9c-ac01-64e17a14f213"
+/>
+
 
 # boofstream
-<img width="322" alt="image" src="https://github.com/user-attachments/assets/2413972e-4f44-478d-ba40-d0ad4cb2c5ad">
+<img 
+   width="322" 
+   alt="advanced_placement: yo the stream cuts are CLEAN" 
+   src="https://github.com/user-attachments/assets/2413972e-4f44-478d-ba40-d0ad4cb2c5ad" 
+/>
 
 boofstream is an overlay tool created by viboof that connects to a Wii running
 Melee through a Slippi console relay.  it is capable of switching OBS scenes
