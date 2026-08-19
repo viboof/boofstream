@@ -12,6 +12,7 @@ import { ConnectionEvent, ConnectionStatus, PlayerType } from "@slippi/slippi-js
 
 import fs from "fs";
 import os from "os";
+import net from "net";
 import { createServer } from "http";
 import isReleaseArtifact from "./isReleaseArtifact";
 import { execSync } from "child_process";
@@ -582,5 +583,33 @@ app.get("/die", async () => {
 
 app.use("/", express.static(isReleaseArtifact ? "dist/ui": "../boofstream-manager/out"));
 
-app.listen(1337, () => console.log("live! open your browser to http://localhost:1337"));
-server.listen(1338);
+// fuck this stupid shit
+async function isPortAvailable(port: number) {
+    return new Promise(resolve => {
+        const server = net.createServer();
+
+        server.once("error", () => resolve(false));
+        server.once("listening", () => server.close(() => resolve(true)));
+
+        server.listen(port);
+    });
+}
+
+async function tryToFindPortAndStart(i: number = 0) {
+    if (i == 9) {
+        console.log("could not find a port to run on :(");
+        return;
+    }
+
+    const port = 1337 + (1000 * i);
+
+    if (!(await isPortAvailable(port)) || !(await isPortAvailable(port + 1))) {
+        await tryToFindPortAndStart(i + 1);
+        return;
+    }
+
+    app.listen(port, () => console.log("live! open your browser to http://localhost:" + port));
+    server.listen(port + 1);
+}
+
+tryToFindPortAndStart().then();
