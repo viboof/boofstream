@@ -13,24 +13,28 @@ export default function ConfigModal(
         value, 
         obsConnected,
         startggPlayerCount,
+        isRefreshingPlayers,
         onClose, 
         onChange, 
         onSave, 
         onOBSConnect, 
         onOBSDisconnect, 
-        onStartggLoad
+        onStartggLoad,
+        onRefreshPlayers
     }:
     {
         show: boolean,
         value: BoofConfig,
         obsConnected: boolean,
         startggPlayerCount: number,
+        isRefreshingPlayers: boolean,
         onClose: () => void,
         onChange: (config: BoofConfig) => void,
         onSave: (config: BoofConfig) => void,
         onOBSConnect: () => void,
         onOBSDisconnect: () => void,
         onStartggLoad: () => void,
+        onRefreshPlayers: () => void,
     }
 ) {
     const [activeModal, setActiveModal] = useState(Modals.SELECT);
@@ -62,12 +66,14 @@ export default function ConfigModal(
         />
         <StartGGSubConfigModal
             isOpen={show && activeModal === Modals.STARTGG}
+            isRefreshingPlayers={isRefreshingPlayers}
             value={value.startgg}
             playerCount={startggPlayerCount}
             onChange={startgg => onChange({ ...value, startgg })}
             onSave={startgg => onSave({ ...value, startgg })}
             onBack={onBack}
             onLoadTournament={onStartggLoad}
+            onRefreshPlayers={onRefreshPlayers}
         />
         <CustomizationSubConfigModal
             isOpen={show && activeModal === Modals.CUSTOMIZATION}

@@ -1,18 +1,19 @@
 import { StartGGConfig } from "boofstream-common";
 import SubConfigModal from "./SubConfigModal";
 import OutsideLink from "../utils/OutsideLink";
-import BigButton from "../forms/BigButton";
 
 export default function StartGGSubConfigModal(
-    { isOpen, value, playerCount, onBack, onChange, onSave, onLoadTournament }:
+    { isOpen, isRefreshingPlayers, value, playerCount, onBack, onChange, onSave, onLoadTournament, onRefreshPlayers }:
     {
         isOpen: boolean,
+        isRefreshingPlayers: boolean,
         value: StartGGConfig,
         playerCount: number,
         onBack: () => void,
         onChange: (config: StartGGConfig) => void,
         onSave: (config: StartGGConfig) => void,
         onLoadTournament: () => void,
+        onRefreshPlayers: () => void,
     }
 ) {
     return <SubConfigModal 
@@ -35,6 +36,10 @@ export default function StartGGSubConfigModal(
             onChange={e => onChange({ ...value, tournamentUrl: e.target.value })}
         /><br />
         <small>(https://www.start.gg/tournament/.../events/melee-singles - do not include anything extra!)</small><br />
-        <strong>{ playerCount ? `${playerCount} players loaded!` : "" }</strong>
+        <small>(parry.gg works too! just make sure you have a parry token!)</small><br />
+        <strong>{ playerCount ? `${playerCount} players loaded!` : "" }</strong>{" "}
+        <button disabled={isRefreshingPlayers} onClick={onRefreshPlayers}>
+            {isRefreshingPlayers ? "refreshing players..." : "refresh players"}
+        </button>
     </SubConfigModal>
 }

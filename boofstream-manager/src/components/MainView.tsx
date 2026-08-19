@@ -46,6 +46,7 @@ export default function MainView(
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [changeSetLoading, setChangeSetLoading] = useState(false);
     const [isSetSelectorRefreshing, setSetSelectorRefreshing] = useState(false);
+    const [isRefreshingPlayers, setIsRefreshingPlayers] = useState(false);
 
     const slippiPort = config.slippi.port;
     const tournamentUrl = config.startgg.tournamentUrl;
@@ -316,6 +317,12 @@ export default function MainView(
         loadSets(tournamentUrl).finally(() => setSetSelectorRefreshing(false));
     }
 
+    function refreshPlayers() {
+        setIsRefreshingPlayers(true);
+        localStorage.removeItem("playerCache");
+        loadPlayers(tournamentUrl).finally(() => setIsRefreshingPlayers(false));
+    }
+
     if (!loaded) {
         return null;
     }
@@ -413,12 +420,14 @@ export default function MainView(
                     obsConnected={state.obsConnected}
                     // admins have negative entrant IDs
                     startggPlayerCount={sggPlayers.length}
+                    isRefreshingPlayers={isRefreshingPlayers}
                     onClose={() => setShowSettingsModal(false)}
                     onChange={onConfigChange}
                     onSave={onConfigSave}
                     onOBSConnect={() => fetch(getBackendHost() + "obs/connect", { method: "post" })}
                     onOBSDisconnect={() => fetch(getBackendHost() + "obs/disconnect", { method: "post" } )}
-                    onStartggLoad={() => loadTournament()}
+                    onStartggLoad={loadTournament}
+                    onRefreshPlayers={refreshPlayers}
                 />
             </div>
         </div>
