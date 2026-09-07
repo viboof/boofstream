@@ -31,9 +31,13 @@ x64)
 1. run boofstream.exe.  only ever run it in the folder it comes in, and don't
    move boofstream.exe or delete other files in the folder
 
-## locals that use(d) boofstream
+## tourneys that use(d) boofstream
 - [Monkeyseed](https://youtube.com/playlist?list=PLOd3GI-BBpHwbHcJER1LwlTDqGmRPtAvc)
 - [Munchie Bar Melee Extravaganza](https://youtube.com/playlist?list=PLOd3GI-BBpHxi5q8wKdFvsM2MeeCjeyY-)
+- Bend or Break 2
+- EugeneBound: Summers
+- Nox Box
+- Rutgers Melee
 
 ## thanks
 - huge thanks to the talented 
