@@ -7,6 +7,3 @@ boofstream/config.json
 boofstream-common/dist
 boofstream/dist
 boofstream-updater/dist
-run-dev.cmd
-run-dev.ps1
-rebuild.bat
