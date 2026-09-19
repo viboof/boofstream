@@ -241,8 +241,10 @@ function writeState() {
     txt(2, "twitter", state.player2.twitter);
     charpng(2, state.player2.character, state.player2.characterColor);
 
+    fs.writeFileSync("out/tournament.txt", state.tournament.name);
     fs.writeFileSync("out/round.txt", state.tournament.match);
     fs.writeFileSync("out/phase.txt", state.tournament.phase);
+    fs.writeFileSync("out/bestof.txt", "Best of " + state.tournament.bestOf);
 }
 
 function txtname(playerNum: number, player: Player) {
